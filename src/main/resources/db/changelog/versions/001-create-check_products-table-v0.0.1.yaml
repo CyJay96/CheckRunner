@@ -4,12 +4,12 @@ databaseChangeLog:
           username: postgres
 
   - changeSet:
-      id: 004v0.0.1
+      id: 001v0.0.1
       author: github.com/CyJay96
-      comment: Create PRODUCTS table
+      comment: Create CHECK_PRODUCTS table
       changes:
         - createTable:
-            tableName: products
+            tableName: check_products
             columns:
               - column:
                   name: id
@@ -20,19 +20,25 @@ databaseChangeLog:
                     nullable: false
 
               - column:
-                  name: description
-                  type: varchar(255)
+                  name: quantity
+                  type: bigint
                   constraints:
                     nullable: false
 
               - column:
-                  name: price
+                  name: total
                   type: numeric(38,2)
                   constraints:
                     nullable: false
 
               - column:
-                  name: is_promotional
-                  type: boolean
+                  name: check_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: product_id
+                  type: bigint
                   constraints:
                     nullable: false
