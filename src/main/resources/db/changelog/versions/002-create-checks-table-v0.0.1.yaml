@@ -4,7 +4,7 @@ databaseChangeLog:
           username: postgres
 
   - changeSet:
-      id: 002v0.0.1-1
+      id: 002v0.0.1
       author: github.com/CyJay96
       comment: Create CHECKS table
       changes:
@@ -78,18 +78,3 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     nullable: true
-
-  # Foreign keys
-  - changeSet:
-      id: 002v0.0.1-2
-      author: github.com/CyJay96
-      comment: Add FK for CHECKS table
-      changes:
-        - addForeignKeyConstraint:
-            baseColumnNames: discount_card_id
-            baseTableName: checks
-            constraintName: fk_checks_discount_cards
-            deferrable: false
-            initiallyDeferred: false
-            referencedColumnNames: id
-            referencedTableName: discount_cards

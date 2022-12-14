@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 005v0.0.1
+      id: 006v0.0.1
       author: github.com/CyJay96
       context: test
       changes:

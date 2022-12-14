@@ -36,18 +36,3 @@ databaseChangeLog:
                   type: boolean
                   constraints:
                     nullable: false
-
-  # Foreign keys
-  - changeSet:
-      id: 004v0.0.1-2
-      author: github.com/CyJay96
-      comment: Add FK for CHECK_PRODUCTS table
-      changes:
-        - addForeignKeyConstraint:
-            baseColumnNames: product_id
-            baseTableName: check_products
-            constraintName: fk_check_products_products
-            deferrable: false
-            initiallyDeferred: false
-            referencedColumnNames: id
-            referencedTableName: products
