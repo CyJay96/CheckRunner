@@ -4,12 +4,12 @@ databaseChangeLog:
           username: postgres
 
   - changeSet:
-      id: 001v0.0.1
+      id: 003v0.0.1
       author: github.com/CyJay96
-      comment: Create CHECK_PRODUCTS table
+      comment: Create RECEIPT_PRODUCTS table
       changes:
         - createTable:
-            tableName: check_products
+            tableName: receipt_products
             columns:
               - column:
                   name: id
@@ -32,7 +32,7 @@ databaseChangeLog:
                     nullable: false
 
               - column:
-                  name: check_id
+                  name: receipt_id
                   type: bigint
                   constraints:
                     nullable: false

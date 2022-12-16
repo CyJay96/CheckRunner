@@ -12,7 +12,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class CheckDto implements Serializable {
+public class ReceiptDto implements Serializable {
 
     @Serial
     private static final Long serialVersionUID = 1L;
@@ -35,20 +35,23 @@ public class CheckDto implements Serializable {
     @JsonProperty(value = "creation_date")
     private Date creationDate;
 
-    @JsonProperty(value = "product_dtos")
-    private List<CheckProductDto> productDtos;
+    @JsonProperty(value = "receipt_product_dtos")
+    private List<ReceiptProductDto> receiptProductDtos;
+
+    @JsonProperty(value = "discount_card_id")
+    private Long discountCardId;
 
     @JsonProperty(value = "is_discount_card_presented")
     private boolean isDiscountCardPresented;
 
-    @JsonProperty(value = "is_promotional")
-    private boolean isPromotional;
+    @JsonProperty(value = "discount_card_price")
+    private BigDecimal discountCardPrice;
 
-    @JsonProperty(value = "taxable_tot")
-    private BigDecimal taxableTot;
+    @JsonProperty(value = "promotional_percent")
+    private BigDecimal promotionalPercent;
 
-    @JsonProperty(value = "vat")
-    private BigDecimal vat;
+    @JsonProperty(value = "promotional_price")
+    private BigDecimal promotionalPrice;
 
     @JsonProperty(value = "total")
     private BigDecimal total;

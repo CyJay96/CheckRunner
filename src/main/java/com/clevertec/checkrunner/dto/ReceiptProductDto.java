@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 
 @Data
 @Builder
-public class CheckProductDto implements Serializable {
+public class ReceiptProductDto implements Serializable {
 
     @Serial
     private static final Long serialVersionUID = 1L;
@@ -21,16 +21,13 @@ public class CheckProductDto implements Serializable {
     @JsonProperty(value = "quantity")
     private Long quantity;
 
-    @JsonProperty(value = "product_description")
-    private String productDescription;
-
-    @JsonProperty(value = "price")
-    private BigDecimal price;
+    @JsonProperty(value = "product_dto")
+    private ProductDto productDto;
 
     @JsonProperty(value = "total")
     private BigDecimal total;
 
-    @JsonProperty(value = "isPromotional")
-    private boolean isPromotional;
+    @JsonProperty(value = "receipt_id")
+    private Long receiptId;
 
 }

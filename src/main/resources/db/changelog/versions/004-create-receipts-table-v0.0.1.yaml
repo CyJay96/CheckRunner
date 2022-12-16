@@ -4,12 +4,12 @@ databaseChangeLog:
           username: postgres
 
   - changeSet:
-      id: 002v0.0.1
+      id: 004v0.0.1
       author: github.com/CyJay96
-      comment: Create CHECKS table
+      comment: Create RECEIPTS table
       changes:
         - createTable:
-            tableName: checks
+            tableName: receipts
             columns:
               - column:
                   name: id
@@ -21,6 +21,12 @@ databaseChangeLog:
 
               - column:
                   name: title
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: shop_title
                   type: varchar(255)
                   constraints:
                     nullable: false
@@ -50,19 +56,19 @@ databaseChangeLog:
                     nullable: false
 
               - column:
-                  name: is_promotional
-                  type: boolean
-                  constraints:
-                    nullable: false
-
-              - column:
-                  name: taxable_tot
+                  name: discount_card_price
                   type: numeric(38,2)
                   constraints:
                     nullable: false
 
               - column:
-                  name: vat
+                  name: promotional_percent
+                  type: numeric(38,2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: promotional_price
                   type: numeric(38,2)
                   constraints:
                     nullable: false

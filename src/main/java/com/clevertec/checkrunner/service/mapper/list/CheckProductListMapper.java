@@ -1,17 +1,17 @@
 package com.clevertec.checkrunner.service.mapper.list;
 
-import com.clevertec.checkrunner.domain.CheckProduct;
-import com.clevertec.checkrunner.dto.CheckProductDto;
-import com.clevertec.checkrunner.service.mapper.CheckProductMapper;
+import com.clevertec.checkrunner.domain.ReceiptProduct;
+import com.clevertec.checkrunner.dto.ReceiptProductDto;
+import com.clevertec.checkrunner.service.mapper.ReceiptProductMapper;
 import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = CheckProductMapper.class)
+@Mapper(componentModel = "spring", uses = ReceiptProductMapper.class)
 public interface CheckProductListMapper {
 
-    List<CheckProduct> dtoToDomain(List<CheckProductDto> checkProductDtos);
+    List<ReceiptProduct> dtoToDomain(List<ReceiptProductDto> receiptProductDtos);
 
-    List<CheckProductDto> domainToDto(List<CheckProduct> checkProducts);
+    List<ReceiptProductDto> domainToDto(List<ReceiptProduct> receiptProducts);
 
 }

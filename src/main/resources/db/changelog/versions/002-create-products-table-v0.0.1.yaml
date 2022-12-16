@@ -4,7 +4,7 @@ databaseChangeLog:
           username: postgres
 
   - changeSet:
-      id: 004v0.0.1
+      id: 002v0.0.1
       author: github.com/CyJay96
       comment: Create PRODUCTS table
       changes:

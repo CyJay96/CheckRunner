@@ -1,14 +1,14 @@
 databaseChangeLog:
   - include: # Create SEQUENCE
       file: db/changelog/versions/000-create-sequence-v0.0.1.yaml
-  - include: # Create CHECK_PRODUCTS table
-      file: db/changelog/versions/001-create-check_products-table-v0.0.1.yaml
-  - include: # Create CHECKS table
-      file: db/changelog/versions/002-create-checks-table-v0.0.1.yaml
   - include: # Create DISCOUNT_CARDS table
-      file: db/changelog/versions/003-create-discount_cards-table-v0.0.1.yaml
+      file: db/changelog/versions/001-create-discount_cards-table-v0.0.1.yaml
   - include: # Create PRODUCTS table
-      file: db/changelog/versions/004-create-products-table-v0.0.1.yaml
+      file: db/changelog/versions/002-create-products-table-v0.0.1.yaml
+  - include: # Create RECEIPT_PRODUCTS table
+      file: db/changelog/versions/003-create-receipt_products-table-v0.0.1.yaml
+  - include: # Create RECEIPTS table
+      file: db/changelog/versions/004-create-receipts-table-v0.0.1.yaml
   - include: # Create FOREIGN keys
       file: db/changelog/versions/005-create-foreign-keys-v0.0.1.yaml
   - include: # Insert TEST data

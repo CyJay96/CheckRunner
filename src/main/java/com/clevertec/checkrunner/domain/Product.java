@@ -42,6 +42,6 @@ public class Product implements Serializable {
     private boolean isPromotional;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<CheckProduct> checkProducts;
+    private List<ReceiptProduct> receiptProducts;
 
 }
