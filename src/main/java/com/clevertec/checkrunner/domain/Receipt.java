@@ -51,7 +51,7 @@ public class Receipt implements Serializable {
     @CreatedDate
     private Date creationDate;
 
-    @OneToMany(mappedBy = "receipt", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "receipt", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.MERGE})
     private List<ReceiptProduct> receiptProducts;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})

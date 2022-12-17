@@ -26,6 +26,9 @@ public class ReceiptDto implements Serializable {
     @JsonProperty(value = "shop_address")
     private String shopAddress;
 
+    @JsonProperty(value = "shop_title")
+    private String shopTitle;
+
     @JsonProperty(value = "phone_number")
     private String phoneNumber;
 

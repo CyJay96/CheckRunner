@@ -5,11 +5,13 @@ import com.clevertec.checkrunner.dto.ReceiptDto;
 import com.clevertec.checkrunner.service.mapper.ReceiptMapper;
 import org.mapstruct.Mapper;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring", uses = ReceiptMapper.class)
-public interface CheckListMapper {
+public interface ReceiptListMapper {
 
-    Receipt dtoToDomain(ReceiptDto receiptDto);
+    List<Receipt> dtoToDomain(List<ReceiptDto> receiptDtos);
 
-    ReceiptDto domainToDto(Receipt receipt);
+    List<ReceiptDto> domainToDto(List<Receipt> receipts);
 
 }

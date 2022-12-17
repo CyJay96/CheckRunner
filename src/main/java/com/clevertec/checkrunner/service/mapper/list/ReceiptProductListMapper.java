@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses = ReceiptProductMapper.class)
-public interface CheckProductListMapper {
+public interface ReceiptProductListMapper {
 
     List<ReceiptProduct> dtoToDomain(List<ReceiptProductDto> receiptProductDtos);
 
