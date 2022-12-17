@@ -1,0 +1,51 @@
+databaseChangeLog:
+  - preConditions:
+      - runningAs:
+          username: postgres
+
+  - changeSet:
+      id: 003v0.0.1-1
+      author: github.com/CyJay96
+      comment: Create CHECK_PRODUCTS table
+      changes:
+        - createTable:
+            tableName: check_products
+            columns:
+              - column:
+                  name: quantity
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: total
+                  type: numeric(38,2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: product_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: check_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+  # Foreign keys
+  - changeSet:
+      id: 003v0.0.1-2
+      author: github.com/CyJay96
+      comment: Add FK for CHECKS table
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: check_id
+            baseTableName: check_products
+            constraintName: fk_check_products_checks
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: checks
