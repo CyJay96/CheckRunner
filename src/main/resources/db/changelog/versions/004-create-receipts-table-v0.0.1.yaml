@@ -1,0 +1,86 @@
+databaseChangeLog:
+  - preConditions:
+      - runningAs:
+          username: postgres
+
+  - changeSet:
+      id: 004v0.0.1
+      author: github.com/CyJay96
+      comment: Create RECEIPTS table
+      changes:
+        - createTable:
+            tableName: receipts
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: title
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: shop_title
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: shop_address
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: phone_number
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: cashier_number
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: creation_date
+                  type: timestamp(6)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: discount_card_price
+                  type: numeric(38,2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: promotional_percent
+                  type: numeric(38,2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: promotional_price
+                  type: numeric(38,2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: total
+                  type: numeric(38,2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: discount_card_id
+                  type: bigint
+                  constraints:
+                    nullable: true

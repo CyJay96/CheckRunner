@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - preConditions:
+      - runningAs:
+          username: postgres
+
+  - changeSet:
+      id: 003v0.0.1
+      author: github.com/CyJay96
+      comment: Create RECEIPT_PRODUCTS table
+      changes:
+        - createTable:
+            tableName: receipt_products
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: quantity
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: total
+                  type: numeric(38,2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: receipt_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: product_id
+                  type: bigint
+                  constraints:
+                    nullable: false

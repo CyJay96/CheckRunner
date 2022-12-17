@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - preConditions:
+      - runningAs:
+          username: postgres
+
+  - changeSet:
+      id: 002v0.0.1
+      author: github.com/CyJay96
+      comment: Create PRODUCTS table
+      changes:
+        - createTable:
+            tableName: products
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: description
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: price
+                  type: numeric(38,2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: is_promotional
+                  type: boolean
+                  constraints:
+                    nullable: false

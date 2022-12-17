@@ -36,7 +36,7 @@ public class DiscountCard implements Serializable {
 
     private Long number;
 
-    @OneToMany(mappedBy = "discountCard", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Check> checks;
+    @OneToMany(mappedBy = "discountCard", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    private List<Receipt> receipts;
 
 }

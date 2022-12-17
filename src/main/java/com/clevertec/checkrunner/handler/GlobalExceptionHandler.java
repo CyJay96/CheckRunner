@@ -1,9 +1,9 @@
 package com.clevertec.checkrunner.handler;
 
-import com.clevertec.checkrunner.exception.CheckNotFoundException;
-import com.clevertec.checkrunner.exception.CheckProductNotFoundException;
 import com.clevertec.checkrunner.exception.DiscountCardNotFoundException;
 import com.clevertec.checkrunner.exception.ProductNotFoundException;
+import com.clevertec.checkrunner.exception.ReceiptNotFoundException;
+import com.clevertec.checkrunner.exception.ReceiptProductNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,8 +15,8 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(CheckNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleCheckNotFoundException(RuntimeException exception) {
+    @ExceptionHandler(ReceiptNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleReceiptNotFoundException(RuntimeException exception) {
         Map<String, String> errorResponse = new HashMap<>();
 
         errorResponse.put("error", HttpStatus.NOT_FOUND.toString());
@@ -25,8 +25,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(CheckProductNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleCheckProductNotFoundException(RuntimeException exception) {
+    @ExceptionHandler(ReceiptProductNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleReceiptProductNotFoundException(RuntimeException exception) {
         Map<String, String> errorResponse = new HashMap<>();
 
         errorResponse.put("error", HttpStatus.NOT_FOUND.toString());

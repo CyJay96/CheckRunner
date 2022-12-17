@@ -6,40 +6,40 @@ databaseChangeLog:
   - changeSet:
       id: 005v0.0.1-1
       author: github.com/CyJay96
-      comment: Add FK for CHECK_PRODUCTS table
+      comment: Add FK for PRODUCTS table
       changes:
         - addForeignKeyConstraint:
-            baseColumnNames: check_id
-            baseTableName: check_products
-            constraintName: fk_check_products_checks
+            baseColumnNames: product_id
+            baseTableName: receipt_products
+            constraintName: fk_receipt_products_products
             deferrable: false
             initiallyDeferred: false
             referencedColumnNames: id
-            referencedTableName: checks
+            referencedTableName: products
 
   - changeSet:
       id: 005v0.0.1-2
       author: github.com/CyJay96
-      comment: Add FK for CHECK_PRODUCTS table
+      comment: Add FK for RECEIPTS table
       changes:
           - addForeignKeyConstraint:
-                baseColumnNames: product_id
-                baseTableName: check_products
-                constraintName: fk_check_products_products
+                baseColumnNames: receipt_id
+                baseTableName: receipt_products
+                constraintName: fk_receipt_products_receipt
                 deferrable: false
                 initiallyDeferred: false
                 referencedColumnNames: id
-                referencedTableName: products
+                referencedTableName: receipts
 
   - changeSet:
       id: 005v0.0.1-3
       author: github.com/CyJay96
-      comment: Add FK for CHECKS table
+      comment: Add FK for RECEIPTS table
       changes:
           - addForeignKeyConstraint:
                 baseColumnNames: discount_card_id
-                baseTableName: checks
-                constraintName: fk_checks_discount_cards
+                baseTableName: receipts
+                constraintName: fk_receipts_discount_cards
                 deferrable: false
                 initiallyDeferred: false
                 referencedColumnNames: id
