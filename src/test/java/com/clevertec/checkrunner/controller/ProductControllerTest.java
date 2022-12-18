@@ -32,6 +32,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class ProductControllerTest {
 
+    @MockBean
+    private ProductController productController;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -43,9 +46,6 @@ class ProductControllerTest {
 
     @Autowired
     private ProductRepository productRepository;
-
-    @MockBean
-    private ProductController productController;
 
     private Product product;
     private ProductDto mockProductDto;
