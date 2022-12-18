@@ -23,11 +23,11 @@ public class ReceiptProductServiceImpl implements ReceiptProductService {
     private final ReceiptRepository receiptRepository;
 
     @Override
-    public ReceiptProduct createReceiptProduct(Long id, Long productQuantity, Long receiptId) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product with ID = " + id + " not found"));
+    public ReceiptProduct createReceiptProduct(Long productId, Long productQuantity, Long receiptId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product with ID = " + productId + " not found"));
         Receipt receipt = receiptRepository.findById(receiptId)
-                .orElseThrow(() -> new ReceiptNotFoundException("Receipt with ID = " + id + " not found"));
+                .orElseThrow(() -> new ReceiptNotFoundException("Receipt with ID = " + productId + " not found"));
 
         ReceiptProduct receiptProduct = ReceiptProduct.builder()
                 .quantity(productQuantity)

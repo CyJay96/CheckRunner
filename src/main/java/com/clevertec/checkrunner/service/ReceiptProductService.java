@@ -4,6 +4,6 @@ import com.clevertec.checkrunner.domain.ReceiptProduct;
 
 public interface ReceiptProductService {
 
-    ReceiptProduct createReceiptProduct(Long id, Long productQuantity, Long receiptId);
+    ReceiptProduct createReceiptProduct(Long productId, Long productQuantity, Long receiptId);
 
 }
