@@ -3,8 +3,8 @@ package com.clevertec.checkrunner.service.impl;
 import com.clevertec.checkrunner.domain.DiscountCard;
 import com.clevertec.checkrunner.domain.Receipt;
 import com.clevertec.checkrunner.domain.ReceiptProduct;
-import com.clevertec.checkrunner.dto.ReceiptDto;
 import com.clevertec.checkrunner.dto.request.ReceiptDtoRequest;
+import com.clevertec.checkrunner.dto.response.ReceiptDtoResponse;
 import com.clevertec.checkrunner.exception.ReceiptNotFoundException;
 import com.clevertec.checkrunner.repository.DiscountCardRepository;
 import com.clevertec.checkrunner.repository.ReceiptProductRepository;
@@ -38,7 +38,7 @@ public class ReceiptServiceImpl implements ReceiptService {
     private final ReceiptProductRepository receiptProductRepository;
 
     @Override
-    public ReceiptDto createReceipt(ReceiptDtoRequest receiptDtoRequest) {
+    public ReceiptDtoResponse createReceipt(ReceiptDtoRequest receiptDtoRequest) {
         Receipt receipt = Receipt.builder()
                 .title(receiptDtoRequest.getTitle())
                 .shopTitle(receiptDtoRequest.getShopTitle())
@@ -61,7 +61,7 @@ public class ReceiptServiceImpl implements ReceiptService {
             addDiscountCardToReceipt(receipt, receiptDtoRequest);
         }
 
-        return receiptMapper.domainToDto(receiptRepository.save(receipt));
+        return receiptMapper.domainToDtoResponse(receiptRepository.save(receipt));
     }
 
     private void addProductsToReceipt(Receipt receipt, ReceiptDtoRequest receiptDtoRequest) {
@@ -125,20 +125,20 @@ public class ReceiptServiceImpl implements ReceiptService {
     }
 
     @Override
-    public List<ReceiptDto> getAllReceipts() {
-        return receiptListMapper.domainToDto(receiptRepository.findAll());
+    public List<ReceiptDtoResponse> getAllReceipts() {
+        return receiptListMapper.domainToDtoResponse(receiptRepository.findAll());
     }
 
     @Override
-    public ReceiptDto getReceiptById(Long id) {
+    public ReceiptDtoResponse getReceiptById(Long id) {
         return receiptRepository.findById(id)
-                .map(receiptMapper::domainToDto)
+                .map(receiptMapper::domainToDtoResponse)
                 .orElseThrow(() -> new ReceiptNotFoundException("Receipt with ID = " + id + " not found"));
     }
 
     @Override
-    public ReceiptDto updateReceiptById(Long id, ReceiptDtoRequest receiptDtoRequest) {
-        return receiptMapper.domainToDto(
+    public ReceiptDtoResponse updateReceiptById(Long id, ReceiptDtoRequest receiptDtoRequest) {
+        return receiptMapper.domainToDtoResponse(
                 receiptRepository.findById(id)
                         .map(receipt -> {
                             receipt.setTitle(receiptDtoRequest.getTitle());

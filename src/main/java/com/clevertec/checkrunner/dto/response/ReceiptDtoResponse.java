@@ -1,5 +1,6 @@
-package com.clevertec.checkrunner.dto;
+package com.clevertec.checkrunner.dto.response;
 
+import com.clevertec.checkrunner.dto.ReceiptProductDto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class ReceiptDto implements Serializable {
+public class ReceiptDtoResponse implements Serializable {
 
     @Serial
     private static final Long serialVersionUID = 1L;

@@ -2,9 +2,13 @@ package com.clevertec.checkrunner.controller;
 
 import com.clevertec.checkrunner.dto.ProductDto;
 import com.clevertec.checkrunner.service.ProductService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,15 +20,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static com.clevertec.checkrunner.controller.ProductController.PRODUCT_API_PATH;
+
 @RestController
-@RequestMapping("/api/v0/product")
+@Validated
+@RequestMapping(value = PRODUCT_API_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 public class ProductController {
+
+    public static final String PRODUCT_API_PATH = "/api/v0/product";
 
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto) {
+    public ResponseEntity<ProductDto> createProduct(@RequestBody @Valid ProductDto productDto) {
         ProductDto product = productService.createProduct(productDto);
         return new ResponseEntity<>(product, HttpStatus.CREATED);
     }
@@ -36,22 +45,22 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDto> findProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductDto> findProductById(@PathVariable @Valid @NotNull Long id) {
         ProductDto product = productService.getProductById(id);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductDto> putProductById(
-            @PathVariable Long id,
-            @RequestBody ProductDto productDto
+            @PathVariable @Valid @NotNull Long id,
+            @RequestBody @Valid ProductDto productDto
     ) {
         ProductDto product = productService.updateProductById(id, productDto);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProductById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProductById(@PathVariable @Valid @NotNull Long id) {
         productService.deleteProductById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

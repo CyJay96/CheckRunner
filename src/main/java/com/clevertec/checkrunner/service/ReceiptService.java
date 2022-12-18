@@ -1,19 +1,19 @@
 package com.clevertec.checkrunner.service;
 
-import com.clevertec.checkrunner.dto.ReceiptDto;
+import com.clevertec.checkrunner.dto.response.ReceiptDtoResponse;
 import com.clevertec.checkrunner.dto.request.ReceiptDtoRequest;
 
 import java.util.List;
 
 public interface ReceiptService {
 
-    ReceiptDto createReceipt(ReceiptDtoRequest receiptDtoRequest);
+    ReceiptDtoResponse createReceipt(ReceiptDtoRequest receiptDtoRequest);
 
-    List<ReceiptDto> getAllReceipts();
+    List<ReceiptDtoResponse> getAllReceipts();
 
-    ReceiptDto getReceiptById(Long id);
+    ReceiptDtoResponse getReceiptById(Long id);
 
-    ReceiptDto updateReceiptById(Long id, ReceiptDtoRequest receiptDtoRequest);
+    ReceiptDtoResponse updateReceiptById(Long id, ReceiptDtoRequest receiptDtoRequest);
 
     void deleteReceiptById(Long id);
 
