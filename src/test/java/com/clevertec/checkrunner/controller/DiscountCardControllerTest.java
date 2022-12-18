@@ -31,6 +31,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class DiscountCardControllerTest {
 
+    @MockBean
+    private DiscountCardController discountCardController;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -42,9 +45,6 @@ class DiscountCardControllerTest {
 
     @Autowired
     private DiscountCardRepository discountCardRepository;
-
-    @MockBean
-    private DiscountCardController discountCardController;
 
     private DiscountCard discountCard;
     private DiscountCardDto mockDiscountCardDto;
@@ -60,6 +60,7 @@ class DiscountCardControllerTest {
         mockDiscountCardDto = discountCardMapper.domainToDto(discountCard);
     }
 
+    // CREATE Discount Card
     @Test
     void createDiscountCard() throws Exception {
         Mockito.when(discountCardController.createDiscountCard(Mockito.any()))
@@ -75,6 +76,7 @@ class DiscountCardControllerTest {
                 .andExpect(jsonPath("$.number", is(1234)));
     }
 
+    // GET Discount Cards
     @Test
     void findAllDiscountCards() throws Exception {
         List<DiscountCardDto> discountCards = new ArrayList<>(List.of(mockDiscountCardDto));
