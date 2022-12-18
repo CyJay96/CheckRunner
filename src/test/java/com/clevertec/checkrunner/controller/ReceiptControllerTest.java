@@ -37,6 +37,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class ReceiptControllerTest {
 
+    @MockBean
+    private ReceiptController receiptController;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -49,41 +52,38 @@ class ReceiptControllerTest {
     @Autowired
     private ReceiptRepository receiptRepository;
 
-    @MockBean
-    private ReceiptController receiptController;
-
     private Receipt receipt;
     private ReceiptDtoRequest mockReceiptDtoRequest;
     private ReceiptDtoResponse mockReceiptDtoResponse;
 
     @BeforeEach
     void init() {
-        ReceiptProduct mockReceiptProduct = ReceiptProduct.builder()
-                .id(1L)
-                .quantity(1L)
-                .product(Product.builder()
-                        .id(1L)
-                        .description("test product")
-                        .price(BigDecimal.ONE)
-                        .isPromotional(true)
-                        .build())
-                .total(BigDecimal.ONE)
-                .build();
-        Receipt mockReceipt = Receipt.builder()
-                .id(1L)
-                .title("test receipt")
-                .shopTitle("test shop title")
-                .shopAddress("test shop address")
-                .phoneNumber("test phone number")
-                .cashierNumber(1234L)
-                .creationDate(new Date())
-                .receiptProducts(List.of(mockReceiptProduct))
-                .discountCardPrice(BigDecimal.ZERO)
-                .promotionalPercent(BigDecimal.ZERO)
-                .promotionalPrice(BigDecimal.ZERO)
-                .total(BigDecimal.ONE)
-                .build();
-        mockReceiptProduct.setReceipt(mockReceipt);
+            ReceiptProduct mockReceiptProduct = ReceiptProduct.builder()
+                    .id(1L)
+                    .quantity(1L)
+                    .product(Product.builder()
+                            .id(1L)
+                            .description("test product")
+                            .price(BigDecimal.ONE)
+                            .isPromotional(true)
+                            .build())
+                    .total(BigDecimal.ONE)
+                    .build();
+            Receipt mockReceipt = Receipt.builder()
+                    .id(1L)
+                    .title("test receipt")
+                    .shopTitle("test shop title")
+                    .shopAddress("test shop address")
+                    .phoneNumber("test phone number")
+                    .cashierNumber(1234L)
+                    .creationDate(new Date())
+                    .receiptProducts(List.of(mockReceiptProduct))
+                    .discountCardPrice(BigDecimal.ZERO)
+                    .promotionalPercent(BigDecimal.ZERO)
+                    .promotionalPrice(BigDecimal.ZERO)
+                    .total(BigDecimal.ONE)
+                    .build();
+            mockReceiptProduct.setReceipt(mockReceipt);
 
         mockReceiptDtoRequest = ReceiptDtoRequest.builder()
                 .title("test title request")
