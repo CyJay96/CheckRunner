@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "Postgres": {
+      "Name": "CheckRunnerAPI",
+      "Port": 5432,
+      "Group": "Servers",
+      "Username": "postgres",
+      "Host": "postgres",
+      "MaintenanceDB": "check_runner",
+      "SSLMode": "prefer"
+    }
+  }
+}

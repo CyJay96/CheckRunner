@@ -1,7 +1,9 @@
 package com.clevertec.checkrunner.service;
 
+import com.clevertec.checkrunner.dto.response.ReceiptDtoResponse;
+
 public interface ReceiptFileService {
 
-    void writeReceiptById(Long receiptId);
+    ReceiptDtoResponse writeReceiptById(Long receiptId);
 
 }

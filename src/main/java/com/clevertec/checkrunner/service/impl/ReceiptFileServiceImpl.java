@@ -23,7 +23,7 @@ public class ReceiptFileServiceImpl implements ReceiptFileService {
     private static final String FOLDER_NAME = "receipts";
 
     @Override
-    public void writeReceiptById(Long receiptId) {
+    public ReceiptDtoResponse writeReceiptById(Long receiptId) {
         ReceiptDtoResponse receipt = receiptService.getReceiptById(receiptId);
 
         File receiptFolder = new File(FOLDER_NAME);
@@ -73,6 +73,8 @@ public class ReceiptFileServiceImpl implements ReceiptFileService {
         } catch (RuntimeException | IOException e) {
             e.printStackTrace();
         }
+
+        return receipt;
     }
 
 }

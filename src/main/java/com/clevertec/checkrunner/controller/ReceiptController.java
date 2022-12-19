@@ -69,9 +69,9 @@ public class ReceiptController {
     }
 
     @GetMapping("/createfile/{id}")
-    public ResponseEntity<Void> createReceiptFile(@PathVariable Long id) {
-        receiptFileService.writeReceiptById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<ReceiptDtoResponse> createReceiptFile(@PathVariable Long id) {
+        ReceiptDtoResponse receipt = receiptFileService.writeReceiptById(id);
+        return new ResponseEntity<>(receipt, HttpStatus.OK);
     }
 
 }
