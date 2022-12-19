@@ -24,11 +24,11 @@ public class ReceiptDtoResponse implements Serializable {
     @JsonProperty(value = "title")
     private String title;
 
-    @JsonProperty(value = "shop_address")
-    private String shopAddress;
-
     @JsonProperty(value = "shop_title")
     private String shopTitle;
+
+    @JsonProperty(value = "shop_address")
+    private String shopAddress;
 
     @JsonProperty(value = "phone_number")
     private String phoneNumber;

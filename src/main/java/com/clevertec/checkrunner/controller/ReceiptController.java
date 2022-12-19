@@ -1,7 +1,8 @@
 package com.clevertec.checkrunner.controller;
 
-import com.clevertec.checkrunner.dto.response.ReceiptDtoResponse;
 import com.clevertec.checkrunner.dto.request.ReceiptDtoRequest;
+import com.clevertec.checkrunner.dto.response.ReceiptDtoResponse;
+import com.clevertec.checkrunner.service.ReceiptFileService;
 import com.clevertec.checkrunner.service.ReceiptService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -32,6 +33,7 @@ public class ReceiptController {
     public static final String RECEIPT_API_PATH = "/api/v0/receipt";
 
     private final ReceiptService receiptService;
+    private final ReceiptFileService receiptFileService;
 
     @PostMapping
     public ResponseEntity<ReceiptDtoResponse> createReceipt(@RequestBody @Valid ReceiptDtoRequest receiptDtoRequest) {
@@ -63,6 +65,12 @@ public class ReceiptController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReceiptById(@PathVariable @Valid @NotNull Long id) {
         receiptService.deleteReceiptById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/createfile/{id}")
+    public ResponseEntity<Void> createReceiptFile(@PathVariable Long id) {
+        receiptFileService.writeReceiptById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
