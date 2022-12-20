@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - preConditions:
+      - runningAs:
+          username: postgres
+
+  - changeSet:
+      id: 005v0.0.1-1
+      author: github.com/CyJay96
+      comment: Add FK for PRODUCTS table
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: product_id
+            baseTableName: receipt_products
+            constraintName: fk_receipt_products_products
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: id
+            referencedTableName: products
+
+  - changeSet:
+      id: 005v0.0.1-2
+      author: github.com/CyJay96
+      comment: Add FK for RECEIPTS table
+      changes:
+          - addForeignKeyConstraint:
+                baseColumnNames: receipt_id
+                baseTableName: receipt_products
+                constraintName: fk_receipt_products_receipt
+                deferrable: false
+                initiallyDeferred: false
+                referencedColumnNames: id
+                referencedTableName: receipts
+
+  - changeSet:
+      id: 005v0.0.1-3
+      author: github.com/CyJay96
+      comment: Add FK for RECEIPTS table
+      changes:
+          - addForeignKeyConstraint:
+                baseColumnNames: discount_card_id
+                baseTableName: receipts
+                constraintName: fk_receipts_discount_cards
+                deferrable: false
+                initiallyDeferred: false
+                referencedColumnNames: id
+                referencedTableName: discount_cards

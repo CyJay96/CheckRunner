@@ -1,0 +1,93 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006v0.0.1
+      author: github.com/CyJay96
+      context: test
+      changes:
+        - sql:
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Loren ipsun', '1.55', false);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Dolor', '2.34', true);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Sir amet', '3.32', false);
+
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Consectetur adiping', '10.50', true);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Elit', '3.12', false);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Suspendisse eget', '0.45', true);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Placerat massa', '37.34', false);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Aenean vulputate', '17.43', true);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Quam ac eleifend', '1.50', false);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Pharetra', '0.99', true);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Integer', '4.23', false);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Magna in', '32.45', true);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Loren scelerisque', '54.30', false);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Efficitru', '2.25', true);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Aliquam', '3.50', false);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Erat volutpat', '18.50', true);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Etian bibendum', '9.75', false);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Mauris mauris', '0.65', true);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Eget eleifend', '1.75', false);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Justo pulvinar', '10.12', true);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Quisque', '8.17', false);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Ullancorper', '5.63', true);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('At velit', '17.80', false);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('In feugiat', '9.99', true);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Aliquet venenatis', '7.55', false);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Nisi id', '0.45', true);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Malesuada vestibu mi', '10.35', false);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Sictum lacus', '53.70', true);
+              
+            INSERT INTO products(description, price, is_promotional)
+            VALUES ('Nunc tempor', '0.25', false);

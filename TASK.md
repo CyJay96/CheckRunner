@@ -1,4 +1,4 @@
-# Clevertec Test task
+# **Clevertec Test task**
 Разработать консольное приложение, реализующее функционал формирования чека в магазине.
 
 ## **Требования**
@@ -71,5 +71,5 @@
 базовых задач с применением принципов SOLID, декларативных подходов, оптимальных алгоритмов.
 
 <p align="center">
-  <img width="280" src="img/check.png"  alt="check_img"/>
+  <img width="280" src="img/receipt.png"  alt="receipt_img"/>
 </p>
