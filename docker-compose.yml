@@ -1,11 +1,11 @@
 version: '3.3'
 
 services:
-  check_runner-api:
+  check-runner-api:
     build:
       dockerfile: Dockerfile
       context: ./
-    image: cyjay96/check_runner-api
+    image: cyjay96/check-runner-api
     ports:
       - "8080:8080"
     environment:
