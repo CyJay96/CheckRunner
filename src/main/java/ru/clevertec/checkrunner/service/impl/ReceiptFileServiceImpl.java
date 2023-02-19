@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 
 import static ru.clevertec.checkrunner.util.Constants.DECIMAL_FORMAT;
 import static ru.clevertec.checkrunner.util.Constants.RECEIPTS_FOLDER_NAME;
@@ -39,12 +39,11 @@ public class ReceiptFileServiceImpl implements ReceiptFileService {
             writer.write("Tel: " + receipt.getPhoneNumber() + "\n");
             writer.write("CASHIER: #" + receipt.getCashierNumber() + "\n");
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-            String formattedDate = dateFormat.format(receipt.getCreationDate());
-            String formattedTime = timeFormat.format(receipt.getCreationDate());
-            writer.write("DATE: " + formattedDate + "\n");
-            writer.write("TIME: " + formattedTime + "\n\n");
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+            writer.write("DATE: " + dateFormatter.format(receipt.getCreationDate()) + "\n");
+            writer.write("TIME: " + timeFormatter.format(receipt.getCreationDate()) + "\n\n");
 
             writer.write("QTY DESCRIPTION PRICE TOTAL" + "\n");
             receipt.getReceiptProductDtos().forEach(receiptProductDto -> {

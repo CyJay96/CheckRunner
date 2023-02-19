@@ -8,7 +8,7 @@ import ru.clevertec.checkrunner.dto.ReceiptProductDto;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Data
@@ -37,7 +37,7 @@ public class ReceiptDtoResponse implements Serializable {
     private Long cashierNumber;
 
     @JsonProperty(value = "creation_date")
-    private LocalDate creationDate;
+    private OffsetDateTime creationDate;
 
     @JsonProperty(value = "receipt_product_dtos")
     private List<ReceiptProductDto> receiptProductDtos;

@@ -64,7 +64,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private ResponseEntity<ErrorDtoResponse> generateErrorResponse(Exception exception, HttpStatus status) {
         ErrorDtoResponse errorResponse = ErrorDtoResponse.builder()
-                .status(status)
+                .status(status.getReasonPhrase())
                 .message(exception.getLocalizedMessage())
                 .build();
         return new ResponseEntity<>(errorResponse, status);

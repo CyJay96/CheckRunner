@@ -17,7 +17,7 @@ import ru.clevertec.checkrunner.service.ReceiptProductService;
 import ru.clevertec.checkrunner.service.ReceiptService;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -45,7 +45,7 @@ public class ReceiptServiceImpl implements ReceiptService {
                 .shopAddress(receiptDtoRequest.getShopAddress())
                 .phoneNumber(receiptDtoRequest.getPhoneNumber())
                 .cashierNumber(receiptDtoRequest.getCashierNumber())
-                .creationDate(LocalDate.now())
+                .creationDate(OffsetDateTime.now())
                 .receiptProducts(new ArrayList<>())
                 .discountCardPrice(BigDecimal.ZERO)
                 .promotionalPercent(receiptDtoRequest.getPromotionalPercent())

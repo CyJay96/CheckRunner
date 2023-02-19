@@ -19,7 +19,7 @@ import org.springframework.data.annotation.CreatedDate;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Entity
@@ -49,7 +49,7 @@ public class Receipt implements Serializable {
     private Long cashierNumber;
 
     @CreatedDate
-    private LocalDate creationDate;
+    private OffsetDateTime creationDate;
 
     @OneToMany(mappedBy = "receipt", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.MERGE})
     private List<ReceiptProduct> receiptProducts;
