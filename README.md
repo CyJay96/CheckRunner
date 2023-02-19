@@ -13,7 +13,7 @@ This is an Application that implements the functionality of creating a receipt i
 
 **Backend technologies:**
 - Java 17
-- Spring Framework 3.0.0:
+- Spring Framework 3.0.2:
   - Spring Boot Web
   - Spring Boot Data JPA
   - Spring Boot Validation
@@ -22,7 +22,7 @@ This is an Application that implements the functionality of creating a receipt i
 - MapStruct
 
 **Build Tool:**
-- Gradle 7.5
+- Gradle 7.5.1
 
 **DataBase:**
 - PostgreSQL
