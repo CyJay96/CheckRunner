@@ -7,8 +7,10 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import java.io.Serial;
@@ -20,6 +22,8 @@ import static ru.clevertec.checkrunner.util.Constants.PHONE_REGEX;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ReceiptDtoRequest implements Serializable {
 
     @Serial

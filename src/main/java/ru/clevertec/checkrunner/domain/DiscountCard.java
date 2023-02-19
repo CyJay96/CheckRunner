@@ -17,6 +17,7 @@ import lombok.Setter;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "discount_cards")
@@ -38,4 +39,17 @@ public class DiscountCard implements Serializable {
 
     @OneToMany(mappedBy = "discountCard", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private List<Receipt> receipts;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DiscountCard that = (DiscountCard) o;
+        return Objects.equals(number, that.number);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(number);
+    }
 }

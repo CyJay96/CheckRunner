@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "receipts")
@@ -64,4 +65,23 @@ public class Receipt implements Serializable {
     private BigDecimal promotionalPrice;
 
     private BigDecimal total;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Receipt receipt = (Receipt) o;
+        return Objects.equals(title, receipt.title) && Objects.equals(shopTitle, receipt.shopTitle) &&
+                Objects.equals(shopAddress, receipt.shopAddress) && Objects.equals(phoneNumber, receipt.phoneNumber) &&
+                Objects.equals(cashierNumber, receipt.cashierNumber) && Objects.equals(creationDate, receipt.creationDate) &&
+                Objects.equals(receiptProducts, receipt.receiptProducts) && Objects.equals(discountCard, receipt.discountCard) &&
+                Objects.equals(discountCardPrice, receipt.discountCardPrice) && Objects.equals(promotionalPercent, receipt.promotionalPercent) &&
+                Objects.equals(promotionalPrice, receipt.promotionalPrice) && Objects.equals(total, receipt.total);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, shopTitle, shopAddress, phoneNumber, cashierNumber, creationDate,
+                receiptProducts, discountCard, discountCardPrice, promotionalPercent, promotionalPrice, total);
+    }
 }

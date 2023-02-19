@@ -1,8 +1,10 @@
 package ru.clevertec.checkrunner.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.clevertec.checkrunner.dto.ReceiptProductDto;
 
 import java.io.Serial;
@@ -13,6 +15,8 @@ import java.util.List;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ReceiptDtoResponse implements Serializable {
 
     @Serial

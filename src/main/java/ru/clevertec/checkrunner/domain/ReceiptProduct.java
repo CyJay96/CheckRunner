@@ -16,6 +16,7 @@ import lombok.Setter;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Entity
 @Table(name = "receipt_products")
@@ -42,4 +43,18 @@ public class ReceiptProduct implements Serializable {
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private Receipt receipt;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReceiptProduct that = (ReceiptProduct) o;
+        return Objects.equals(quantity, that.quantity) && Objects.equals(product, that.product) &&
+                Objects.equals(total, that.total) && Objects.equals(receipt, that.receipt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(quantity, product, total, receipt);
+    }
 }
