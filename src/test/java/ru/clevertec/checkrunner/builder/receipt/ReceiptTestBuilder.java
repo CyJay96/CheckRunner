@@ -55,6 +55,7 @@ public class ReceiptTestBuilder implements TestBuilder<Receipt> {
     @Override
     public Receipt build() {
         final Receipt receipt = new Receipt();
+        receipt.setId(id);
         receipt.setTitle(title);
         receipt.setShopTitle(shopTitle);
         receipt.setShopAddress(shopAddress);
