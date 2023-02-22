@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.clevertec.checkrunner.dto.response.ErrorDtoResponse;
+import ru.clevertec.checkrunner.exception.DataNotFoundException;
 import ru.clevertec.checkrunner.exception.DiscountCardNotFoundException;
 import ru.clevertec.checkrunner.exception.ProductNotFoundException;
 import ru.clevertec.checkrunner.exception.ReceiptNotFoundException;
@@ -55,6 +56,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ErrorDtoResponse> handleProductNotFoundException(RuntimeException exception) {
         return generateErrorResponse(exception, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DataNotFoundException.class)
+    public ResponseEntity<ErrorDtoResponse> handleDataNotFoundException(RuntimeException exception) {
+        return generateErrorResponse(exception, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorDtoResponse> handleIllegalArgumentException(RuntimeException exception) {
+        return generateErrorResponse(exception, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<ErrorDtoResponse> handleNullPointerException(RuntimeException exception) {
+        return generateErrorResponse(exception, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class)
