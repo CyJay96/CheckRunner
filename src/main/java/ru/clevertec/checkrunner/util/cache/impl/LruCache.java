@@ -3,6 +3,7 @@ package ru.clevertec.checkrunner.util.cache.impl;
 import ru.clevertec.checkrunner.exception.DataNotFoundException;
 import ru.clevertec.checkrunner.util.cache.Cache;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -55,14 +56,16 @@ public class LruCache<K, V> implements Cache<K, V> {
         if (key == null || value == null) {
             throw new NullPointerException("Key or Value in LRU cache is null");
         }
-        if (cache.containsValue(value)) {
+        if (cache.containsKey(key)) {
             keys.remove(key);
+            cache.replace(key, value);
+        } else {
+            while (cache.size() >= capacity) {
+                K evictedKey = keys.removeLast();
+                cache.remove(evictedKey);
+            }
+            cache.put(key, value);
         }
-        while (cache.size() >= capacity) {
-            K evictedKey = keys.removeLast();
-            cache.remove(evictedKey);
-        }
-        cache.put(key, value);
         keys.addFirst(key);
     }
 
@@ -86,6 +89,41 @@ public class LruCache<K, V> implements Cache<K, V> {
         keys.remove(key);
         keys.addFirst(key);
         return value;
+    }
+
+    /**
+     * Removes the value to which the specified key is mapped.
+     *
+     * @param key the key whose associated value is to be removed
+     * @throws NullPointerException if the key is null
+     */
+    @Override
+    public void remove(K key) {
+        if (key == null) {
+            throw new NullPointerException();
+        }
+        cache.remove(key);
+        keys.remove(key);
+    }
+
+    /**
+     * Returns a collection of cache values.
+     *
+     * @return a collection of cache values
+     */
+    @Override
+    public Collection<V> values() {
+        return cache.values();
+    }
+
+    /**
+     * Checks if this key is in the cache.
+     *
+     * @return a Boolean value of whether the key is in the cache
+     */
+    @Override
+    public boolean containsKey(K key) {
+        return cache.containsKey(key);
     }
 
     /**
@@ -117,6 +155,11 @@ public class LruCache<K, V> implements Cache<K, V> {
         keys.clear();
     }
 
+    /**
+     * Returns the contents of the cache.
+     *
+     * @return the contents of the cache
+     */
     @Override
     public String toString() {
         return cache.toString();

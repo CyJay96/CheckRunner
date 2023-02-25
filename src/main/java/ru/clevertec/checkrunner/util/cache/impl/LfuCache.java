@@ -3,6 +3,7 @@ package ru.clevertec.checkrunner.util.cache.impl;
 import ru.clevertec.checkrunner.exception.DataNotFoundException;
 import ru.clevertec.checkrunner.util.cache.Cache;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -45,8 +46,8 @@ public class LfuCache<K, V> implements Cache<K, V> {
         cache = new ConcurrentHashMap<>(capacity);
         frequencies = new ConcurrentHashMap<>(capacity);
         orderedKeys = new ConcurrentSkipListSet<>((k1, k2) -> {
-            int freq1 = frequencies.get(k1);
-            int freq2 = frequencies.get(k2);
+            int freq1 = frequencies.getOrDefault(k1, 0);
+            int freq2 = frequencies.getOrDefault(k2, 0);
             return freq1 == freq2 ? k1.hashCode() - k2.hashCode() : freq1 - freq2;
         });
     }
@@ -67,8 +68,9 @@ public class LfuCache<K, V> implements Cache<K, V> {
         }
         if (cache.containsKey(key)) {
             int frequency = frequencies.get(key);
-            frequencies.put(key, frequency + 1);
+            frequencies.replace(key, frequency + 1);
             orderedKeys.remove(key);
+            cache.replace(key, value);
         } else {
             while (cache.size() >= capacity) {
                 K evictedKey = orderedKeys.pollFirst();
@@ -76,8 +78,8 @@ public class LfuCache<K, V> implements Cache<K, V> {
                 frequencies.remove(evictedKey);
             }
             frequencies.put(key, 1);
+            cache.put(key, value);
         }
-        cache.put(key, value);
         orderedKeys.add(key);
     }
 
@@ -104,6 +106,42 @@ public class LfuCache<K, V> implements Cache<K, V> {
         orderedKeys.remove(key);
         orderedKeys.add(key);
         return value;
+    }
+
+    /**
+     * Removes the value to which the specified key is mapped.
+     *
+     * @param key the key whose associated value is to be removed
+     * @throws NullPointerException if the key is null
+     */
+    @Override
+    public void remove(K key) {
+        if (key == null) {
+            throw new NullPointerException();
+        }
+        cache.remove(key);
+        frequencies.remove(key);
+        orderedKeys.remove(key);
+    }
+
+    /**
+     * Returns a collection of cache values.
+     *
+     * @return a collection of cache values
+     */
+    @Override
+    public Collection<V> values() {
+        return cache.values();
+    }
+
+    /**
+     * Checks if this key is in the cache.
+     *
+     * @return a Boolean value of whether the key is in the cache
+     */
+    @Override
+    public boolean containsKey(K key) {
+        return cache.containsKey(key);
     }
 
     /**
@@ -136,6 +174,11 @@ public class LfuCache<K, V> implements Cache<K, V> {
         orderedKeys.clear();
     }
 
+    /**
+     * Returns the contents of the cache.
+     *
+     * @return the contents of the cache
+     */
     @Override
     public String toString() {
         return "LfuCache{" +
