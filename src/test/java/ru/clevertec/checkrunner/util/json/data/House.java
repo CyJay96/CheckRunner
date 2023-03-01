@@ -1,37 +1,17 @@
 package ru.clevertec.checkrunner.util.json.data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Objects;
 
+@Getter
+@Setter
 public class House {
 
-    private List<Floor> floors;
-
-    private double[] receipts;
+    private int floorCount;
 
     public House() {
-        floors = new ArrayList<>();
-        floors.add(new Floor());
-        floors.add(new Floor());
-        receipts = new double[] {1.2, 4.6};
-    }
-
-    public List<Floor> getFloors() {
-        return floors;
-    }
-
-    public void setFloors(List<Floor> floors) {
-        this.floors = floors;
-    }
-
-    public double[] getReceipts() {
-        return receipts;
-    }
-
-    public void setReceipts(double[] receipts) {
-        this.receipts = receipts;
     }
 
     @Override
@@ -39,21 +19,18 @@ public class House {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         House house = (House) o;
-        return Objects.equals(floors, house.floors) && Arrays.equals(receipts, house.receipts);
+        return floorCount == house.floorCount;
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(floors);
-        result = 31 * result + Arrays.hashCode(receipts);
-        return result;
+        return Objects.hash(floorCount);
     }
 
     @Override
     public String toString() {
         return "House{" +
-                "floors=" + floors +
-                ", receipts=" + Arrays.toString(receipts) +
+                "floorCount=" + floorCount +
                 '}';
     }
 }

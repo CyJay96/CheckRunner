@@ -1,7 +1,12 @@
 package ru.clevertec.checkrunner.util.json.data;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Objects;
 
+@Getter
+@Setter
 public class Floor {
 
     private Byte width;
@@ -9,24 +14,6 @@ public class Floor {
     private Float height;
 
     public Floor() {
-        width = 8;
-        height = 6.4f;
-    }
-
-    public Byte getWidth() {
-        return width;
-    }
-
-    public void setWidth(Byte width) {
-        this.width = width;
-    }
-
-    public Float getHeight() {
-        return height;
-    }
-
-    public void setHeight(Float height) {
-        this.height = height;
     }
 
     @Override

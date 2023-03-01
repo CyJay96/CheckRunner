@@ -1,7 +1,12 @@
 package ru.clevertec.checkrunner.util.json.data;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Objects;
 
+@Getter
+@Setter
 public class Address {
 
     private House house;
@@ -11,33 +16,6 @@ public class Address {
     private Long houseNumber;
 
     public Address() {
-        house = new House();
-        isApartment = true;
-        houseNumber = 40L;
-    }
-
-    public House getHouse() {
-        return house;
-    }
-
-    public void setHouse(House house) {
-        this.house = house;
-    }
-
-    public Boolean getApartment() {
-        return isApartment;
-    }
-
-    public void setApartment(Boolean apartment) {
-        isApartment = apartment;
-    }
-
-    public Long getHouseNumber() {
-        return houseNumber;
-    }
-
-    public void setHouseNumber(Long houseNumber) {
-        this.houseNumber = houseNumber;
     }
 
     @Override

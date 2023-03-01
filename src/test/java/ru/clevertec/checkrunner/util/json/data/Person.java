@@ -1,12 +1,17 @@
 package ru.clevertec.checkrunner.util.json.data;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Objects;
 
+@Getter
+@Setter
 public class Person {
 
     private static String type;
 
-    private final String name;
+    private  String name;
 
     private int age;
 
@@ -15,11 +20,13 @@ public class Person {
     private Character gender;
 
     public Person() {
-        type = "Person";
-        name = "Tom";
-        age = 21;
-        address = new Address();
-        gender = 'M';
+    }
+
+    public Person(String name, int age, Address address, Character gender) {
+        this.name = name;
+        this.age = age;
+        this.address = address;
+        this.gender = gender;
     }
 
     public static String getType() {
@@ -28,34 +35,6 @@ public class Person {
 
     public static void setType(String type) {
         Person.type = type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
-
-    public Character getGender() {
-        return gender;
-    }
-
-    public void setGender(Character gender) {
-        this.gender = gender;
     }
 
     @Override

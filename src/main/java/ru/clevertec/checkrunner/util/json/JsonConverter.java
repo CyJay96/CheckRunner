@@ -31,7 +31,7 @@ public class JsonConverter {
 
                     if (field.getType().equals(String.class) || field.getType().equals(Character.class)) {
                         json.append("\"").append(fieldValue).append("\",");
-                    } else if (isNumberOrBooleanOrPrimitive(field.getType())) {
+                    } else if (isNumberOrBooleanOrPrimitiveOrArray(field.getType())) {
                         json.append(fieldValue).append(",");
                     } else if (field.getType().isArray() || Iterable.class.isAssignableFrom(field.getType())) {
                         json.append(toJsonArray(fieldValue)).append(",");
@@ -79,7 +79,7 @@ public class JsonConverter {
     }
 
     private static void appendElementToJsonArray(StringBuilder jsonArray, Object value) {
-        if (isNumberOrBooleanOrPrimitive(value.getClass())) {
+        if (isNumberOrBooleanOrPrimitiveOrArray(value.getClass())) {
             jsonArray.append(value).append(",");
         } else if (value.getClass().equals(String.class) || value.getClass().equals(Character.class)) {
             jsonArray.append("\"").append(value).append("\",");
@@ -117,10 +117,12 @@ public class JsonConverter {
                 try {
                     if (field.getType().equals(Character.class)) {
                         field.set(object, value.toString().charAt(0));
-                    } else if (isNumberOrBooleanOrPrimitive(field.getType()) || field.getType().equals(String.class)) {
+                    } else if (field.getType().equals(Long.class)) {
+                        field.set(object, Long.valueOf((Integer) value));
+                    } else if (isNumberOrBooleanOrPrimitiveOrArray(field.getType()) || field.getType().equals(String.class)) {
                         field.set(object, value);
                     } else {
-                        field.set(object, setObjectFields(fieldsValues, field.getType()));
+                        field.set(object, setObjectFields((Map<String, Object>) fieldsValues.get(field.getName()), field.getType()));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -131,7 +133,8 @@ public class JsonConverter {
         return object;
     }
 
-    private static boolean isNumberOrBooleanOrPrimitive(Class<?> classType) {
-        return Number.class.isAssignableFrom(classType) || classType.equals(Boolean.class) || classType.isPrimitive();
+    private static boolean isNumberOrBooleanOrPrimitiveOrArray(Class<?> classType) {
+        return Number.class.isAssignableFrom(classType) || classType.equals(Boolean.class)
+                || classType.isPrimitive() || classType.isArray();
     }
 }
