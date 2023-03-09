@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.checkrunner.dto.DiscountCardDto;
+import ru.clevertec.checkrunner.dto.response.ApiResponse;
 import ru.clevertec.checkrunner.service.DiscountCardService;
 
 import java.util.List;
 
 import static ru.clevertec.checkrunner.controller.DiscountCardController.DISCOUNT_CARD_API_PATH;
+import static ru.clevertec.checkrunner.dto.response.ApiResponse.apiResponseEntity;
 
 @RestController
 @Validated
@@ -28,40 +30,77 @@ import static ru.clevertec.checkrunner.controller.DiscountCardController.DISCOUN
 @RequiredArgsConstructor
 public class DiscountCardController {
 
-    public static final String DISCOUNT_CARD_API_PATH = "/api/v0/discountcard";
+    public static final String DISCOUNT_CARD_API_PATH = "/api/v0/discountCards";
 
     private final DiscountCardService discountCardService;
 
     @PostMapping
-    public ResponseEntity<DiscountCardDto> createDiscountCard(@RequestBody @Valid DiscountCardDto discountCardDto) {
+    public ResponseEntity<ApiResponse<DiscountCardDto>> createDiscountCard(
+            @RequestBody @Valid DiscountCardDto discountCardDto
+    ) {
         DiscountCardDto discountCard = discountCardService.createDiscountCard(discountCardDto);
-        return new ResponseEntity<>(discountCard, HttpStatus.CREATED);
+
+        return apiResponseEntity(
+                "Discount Card with ID " + discountCard.getId() + " was created",
+                DISCOUNT_CARD_API_PATH,
+                HttpStatus.CREATED,
+                ApiResponse.Color.SUCCESS,
+                discountCard
+        );
     }
 
     @GetMapping
-    public ResponseEntity<List<DiscountCardDto>> findAllDiscountCards() {
+    public ResponseEntity<ApiResponse<List<DiscountCardDto>>> findAllDiscountCards() {
         List<DiscountCardDto> discountCards = discountCardService.getAllDiscountCards();
-        return new ResponseEntity<>(discountCards, HttpStatus.OK);
+
+        return apiResponseEntity(
+                "All Discount Cards",
+                DISCOUNT_CARD_API_PATH,
+                HttpStatus.OK,
+                ApiResponse.Color.SUCCESS,
+                discountCards
+        );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DiscountCardDto> findDiscountCardById(@PathVariable @Valid @NotNull Long id) {
+    public ResponseEntity<ApiResponse<DiscountCardDto>> findDiscountCardById(@PathVariable @Valid @NotNull Long id) {
         DiscountCardDto discountCard = discountCardService.getDiscountCardById(id);
-        return new ResponseEntity<>(discountCard, HttpStatus.OK);
+
+        return apiResponseEntity(
+                "Discount Card with ID " + discountCard.getId() + " was found",
+                DISCOUNT_CARD_API_PATH + "/" + id,
+                HttpStatus.OK,
+                ApiResponse.Color.SUCCESS,
+                discountCard
+        );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DiscountCardDto> putDiscountCardById(
+    public ResponseEntity<ApiResponse<DiscountCardDto>> putDiscountCardById(
             @PathVariable @Valid @NotNull Long id,
             @RequestBody @Valid DiscountCardDto discountCardDto
     ) {
         DiscountCardDto discountCard = discountCardService.updateDiscountCardById(id, discountCardDto);
-        return new ResponseEntity<>(discountCard, HttpStatus.OK);
+
+        return apiResponseEntity(
+                "Changes were applied to the Discount Card with ID " + id,
+                DISCOUNT_CARD_API_PATH + "/" + id,
+                HttpStatus.OK,
+                ApiResponse.Color.SUCCESS,
+                discountCard
+        );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDiscountCardById(@PathVariable @Valid @NotNull Long id) {
+    public ResponseEntity<ApiResponse<Void>> deleteDiscountCardById(@PathVariable @Valid @NotNull Long id) {
         discountCardService.deleteDiscountCardById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        return apiResponseEntity(
+                "Discount Card with ID " + id + " was deleted",
+                DISCOUNT_CARD_API_PATH + "/" + id,
+                HttpStatus.NO_CONTENT,
+                ApiResponse.Color.SUCCESS,
+                null
+        );
     }
 }

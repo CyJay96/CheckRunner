@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.checkrunner.dto.ProductDto;
+import ru.clevertec.checkrunner.dto.response.ApiResponse;
 import ru.clevertec.checkrunner.service.ProductService;
 
 import java.util.List;
 
 import static ru.clevertec.checkrunner.controller.ProductController.PRODUCT_API_PATH;
+import static ru.clevertec.checkrunner.dto.response.ApiResponse.apiResponseEntity;
 
 @RestController
 @Validated
@@ -28,40 +30,75 @@ import static ru.clevertec.checkrunner.controller.ProductController.PRODUCT_API_
 @RequiredArgsConstructor
 public class ProductController {
 
-    public static final String PRODUCT_API_PATH = "/api/v0/product";
+    public static final String PRODUCT_API_PATH = "/api/v0/products";
 
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<ProductDto> createProduct(@RequestBody @Valid ProductDto productDto) {
+    public ResponseEntity<ApiResponse<ProductDto>> createProduct(@RequestBody @Valid ProductDto productDto) {
         ProductDto product = productService.createProduct(productDto);
-        return new ResponseEntity<>(product, HttpStatus.CREATED);
+
+        return apiResponseEntity(
+                "Product with ID " + product.getId() + " was created",
+                PRODUCT_API_PATH,
+                HttpStatus.CREATED,
+                ApiResponse.Color.SUCCESS,
+                product
+        );
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductDto>> findAllProducts() {
+    public ResponseEntity<ApiResponse<List<ProductDto>>> findAllProducts() {
         List<ProductDto> products = productService.getAllProducts();
-        return new ResponseEntity<>(products, HttpStatus.OK);
+
+        return apiResponseEntity(
+                "All Products",
+                PRODUCT_API_PATH,
+                HttpStatus.OK,
+                ApiResponse.Color.SUCCESS,
+                products
+        );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDto> findProductById(@PathVariable @Valid @NotNull Long id) {
+    public ResponseEntity<ApiResponse<ProductDto>> findProductById(@PathVariable @Valid @NotNull Long id) {
         ProductDto product = productService.getProductById(id);
-        return new ResponseEntity<>(product, HttpStatus.OK);
+
+        return apiResponseEntity(
+                "Product with ID " + product.getId() + " was found",
+                PRODUCT_API_PATH + "/" + id,
+                HttpStatus.OK,
+                ApiResponse.Color.SUCCESS,
+                product
+        );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDto> putProductById(
+    public ResponseEntity<ApiResponse<ProductDto>> putProductById(
             @PathVariable @Valid @NotNull Long id,
             @RequestBody @Valid ProductDto productDto
     ) {
         ProductDto product = productService.updateProductById(id, productDto);
-        return new ResponseEntity<>(product, HttpStatus.OK);
+
+        return apiResponseEntity(
+                "Changes were applied to the Product with ID " + id,
+                PRODUCT_API_PATH + "/" + id,
+                HttpStatus.OK,
+                ApiResponse.Color.SUCCESS,
+                product
+        );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProductById(@PathVariable @Valid @NotNull Long id) {
+    public ResponseEntity<ApiResponse<Void>> deleteProductById(@PathVariable @Valid @NotNull Long id) {
         productService.deleteProductById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        return apiResponseEntity(
+                "Product with ID " + id + " was deleted",
+                PRODUCT_API_PATH + "/" + id,
+                HttpStatus.NO_CONTENT,
+                ApiResponse.Color.SUCCESS,
+                null
+        );
     }
 }
