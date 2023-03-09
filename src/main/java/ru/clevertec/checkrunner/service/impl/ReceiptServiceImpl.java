@@ -66,10 +66,10 @@ public class ReceiptServiceImpl implements ReceiptService {
 
     private void addProductsToReceipt(Receipt receipt, ReceiptDtoRequest receiptDtoRequest) {
         receiptDtoRequest.getProducts().forEach((productId, quantity) -> {
-            ReceiptProduct receiptProductDto = receiptProductService
-                    .createReceiptProduct(productId, quantity, receipt.getId());
-            receipt.getReceiptProducts().add(receiptProductDto);
-            receipt.setTotal(receipt.getTotal().add(receiptProductDto.getTotal()));
+            ReceiptProduct receiptProduct = receiptProductService
+                    .createReceiptProduct(productId, quantity, receipt);
+            receipt.getReceiptProducts().add(receiptProduct);
+            receipt.setTotal(receipt.getTotal().add(receiptProduct.getTotal()));
         });
     }
 
@@ -110,7 +110,7 @@ public class ReceiptServiceImpl implements ReceiptService {
     private void addDiscountCardToReceipt(Receipt receipt, ReceiptDtoRequest receiptDtoRequest) {
         Long discountCardNumber = receiptDtoRequest.getDiscountCardNumber();
         if (discountCardRepository.existsByNumber(discountCardNumber)) {
-            receipt.setDiscountCard(discountCardRepository.findByNumber(discountCardNumber).get());
+            receipt.setDiscountCard(discountCardRepository.findAllByNumber(discountCardNumber).get(0));
         } else {
             DiscountCard discountCard = DiscountCard.builder()
                     .number(receiptDtoRequest.getDiscountCardNumber())
@@ -146,7 +146,8 @@ public class ReceiptServiceImpl implements ReceiptService {
                             receipt.setShopAddress(receiptDtoRequest.getShopAddress());
                             receipt.setPhoneNumber(receiptDtoRequest.getPhoneNumber());
                             receipt.setCashierNumber(receiptDtoRequest.getCashierNumber());
-                            receiptProductRepository.deleteAll(receipt.getReceiptProducts());
+                            receipt.getReceiptProducts().forEach(receiptProduct ->
+                                    receiptProductRepository.deleteById(receiptProduct.getId()));
                             receipt.getReceiptProducts().clear();
 
                             if (receipt.getDiscountCard() != null) {

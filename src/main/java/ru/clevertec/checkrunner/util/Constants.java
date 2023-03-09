@@ -10,4 +10,7 @@ public class Constants {
     public static final Integer DISCOUNT_CARD_PERCENT = 10;
     public static final Integer MAX_PROM_COUNT = 5;
     public static final Integer NUMBER_TO_MOVE_POINT = -2;
+
+    public static final String LRU_CACHE = "LRU";
+    public static final String LFU_CACHE = "LFU";
 }

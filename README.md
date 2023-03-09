@@ -13,13 +13,15 @@ This is an Application that implements the functionality of creating a receipt i
 
 **Backend technologies:**
 - Java 17
-- Spring Framework 3.0.2:
+- Spring Framework 3.0.3:
   - Spring Boot Web
   - Spring Boot Data JPA
   - Spring Boot Validation
   - Spring Boot Test
+- AOP AspectJ
 - Lombok
 - MapStruct
+- LRU & LFU cache implementation
 
 **Build Tool:**
 - Gradle 7.5.1
@@ -79,3 +81,11 @@ Run CheckRunner Application using Docker Compose:
 |     **GET**     | `/api/v0/discountcard/{id}` |   Get Discount Card by ID   |
 |     **PUT**     | `/api/v0/discountcard/{id}` | Update Discount Card by ID  |
 |   **DELETE**    | `/api/v0/discountcard/{id}` | Delete Discount Card by ID  |
+
+### **Cache Implementation**
+
+- **GET** - search data in the cache and if there is no data there,  
+            then get data from the DB, save it to the cache and return it.
+- **POST** - save data in the DB and then save it in the cache.
+- **PUT** - update/insert data in the DB and then update/insert it in the cache.
+- **DELETE** - delete data from the DB and then delete it in the cache.

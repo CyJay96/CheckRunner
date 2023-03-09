@@ -36,12 +36,12 @@ public class ReceiptProduct implements Serializable {
 
     private Long quantity;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     private Product product;
 
     private BigDecimal total;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     private Receipt receipt;
 
     @Override
@@ -50,11 +50,11 @@ public class ReceiptProduct implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         ReceiptProduct that = (ReceiptProduct) o;
         return Objects.equals(quantity, that.quantity) && Objects.equals(product, that.product) &&
-                Objects.equals(total, that.total) && Objects.equals(receipt, that.receipt);
+                Objects.equals(total, that.total);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(quantity, product, total, receipt);
+        return Objects.hash(quantity, product, total);
     }
 }
