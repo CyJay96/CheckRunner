@@ -42,7 +42,7 @@ public class Product implements Serializable {
 
     private boolean isPromotional;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private List<ReceiptProduct> receiptProducts;
 
     @Override
