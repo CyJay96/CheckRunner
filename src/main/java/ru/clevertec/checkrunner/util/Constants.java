@@ -13,4 +13,12 @@ public class Constants {
 
     public static final String LRU_CACHE = "LRU";
     public static final String LFU_CACHE = "LFU";
+
+    public static class DomainClasses {
+
+        public static final String DISCOUNT_CARD_DOMAIN = "Discount Card";
+        public static final String PRODUCT_DOMAIN = "Product";
+        public static final String RECEIPT_DOMAIN = "Receipt";
+        public static final String RECEIPT_PRODUCT_DOMAIN = "Receipt Product";
+    }
 }

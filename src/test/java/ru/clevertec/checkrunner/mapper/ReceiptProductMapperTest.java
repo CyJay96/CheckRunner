@@ -84,7 +84,7 @@ class ReceiptProductMapperTest {
         assertAll(
                 () -> assertThat(receiptProductDto.getId()).isEqualTo(TEST_ID),
                 () -> assertThat(receiptProductDto.getQuantity()).isEqualTo(TEST_NUMBER),
-                () -> assertThat(receiptProductDto.getProductDto()).isEqualTo(productDto),
+                () -> assertThat(receiptProductDto.getProduct()).isEqualTo(productDto),
                 () -> assertThat(receiptProductDto.getTotal()).isEqualTo(TEST_BIG_DECIMAL),
                 () -> assertThat(receiptProductDto.getReceiptId()).isEqualTo(TEST_ID),
                 () -> assertThat(productCaptor.getValue()).isEqualTo(product)

@@ -41,7 +41,7 @@ class ReceiptMapperTest {
                 () -> assertThat(receiptDtoResponse.getPhoneNumber()).isEqualTo(TEST_PHONE_NUMBER),
                 () -> assertThat(receiptDtoResponse.getCashierNumber()).isEqualTo(TEST_NUMBER),
                 () -> assertThat(receiptDtoResponse.getCreationDate()).isEqualTo(TEST_DATE),
-                () -> assertThat(receiptDtoResponse.getReceiptProductDtos()).isNullOrEmpty(),
+                () -> assertThat(receiptDtoResponse.getReceiptProducts()).isNullOrEmpty(),
                 () -> assertThat(receiptDtoResponse.getDiscountCardId()).isEqualTo(TEST_ID),
                 () -> assertThat(receiptDtoResponse.isDiscountCardPresented()).isEqualTo(TEST_BOOLEAN),
                 () -> assertThat(receiptDtoResponse.getDiscountCardPrice()).isEqualTo(TEST_BIG_DECIMAL),

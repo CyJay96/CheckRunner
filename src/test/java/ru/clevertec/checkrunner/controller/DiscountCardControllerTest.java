@@ -12,9 +12,12 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import ru.clevertec.checkrunner.builder.discountCard.DiscountCardDtoTestBuilder;
+import ru.clevertec.checkrunner.config.PaginationProperties;
 import ru.clevertec.checkrunner.dto.DiscountCardDto;
+import ru.clevertec.checkrunner.exception.ConversionException;
 import ru.clevertec.checkrunner.exception.DiscountCardNotFoundException;
 import ru.clevertec.checkrunner.service.DiscountCardService;
 
@@ -29,6 +32,8 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static ru.clevertec.checkrunner.util.TestConstants.PAGE;
+import static ru.clevertec.checkrunner.util.TestConstants.PAGE_SIZE;
 import static ru.clevertec.checkrunner.util.TestConstants.TEST_ID;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,6 +41,9 @@ class DiscountCardControllerTest {
 
     @Mock
     private DiscountCardService discountCardService;
+
+    @Mock
+    private PaginationProperties paginationProperties;
 
     @InjectMocks
     private DiscountCardController discountCardController;
@@ -45,7 +53,7 @@ class DiscountCardControllerTest {
 
     @BeforeEach
     void setUp() {
-        discountCardController = new DiscountCardController(discountCardService);
+        discountCardController = new DiscountCardController(discountCardService, paginationProperties);
     }
 
     @Test
@@ -61,27 +69,30 @@ class DiscountCardControllerTest {
 
         assertAll(
                 () -> assertThat(discountCardResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED),
-                () -> assertThat(discountCardResponse.getBody()).isEqualTo(discountCardDto),
+                () -> assertThat(discountCardResponse.getBody().getData()).isEqualTo(discountCardDto),
                 () -> assertThat(discountCardDtoCaptor.getValue()).isEqualTo(discountCardDto)
         );
     }
 
     @Test
     @DisplayName("Find all Discount Cards")
-    void checkFindAllDiscountCardsShouldReturnDiscountCardDtoList() {
+    void checkFindAllDiscountCardsShouldReturnDiscountCardDtoPage() {
         DiscountCardDto discountCardDto = DiscountCardDtoTestBuilder.aDiscountCardDto().build();
 
-        when(discountCardService.getAllDiscountCards()).thenReturn(List.of(discountCardDto));
+        when(paginationProperties.getDefaultPageValue()).thenReturn(PAGE);
+        when(paginationProperties.getDefaultPageSize()).thenReturn(PAGE_SIZE);
+        when(discountCardService.getAllDiscountCards(PAGE, PAGE_SIZE)).thenReturn(new PageImpl<>(List.of(discountCardDto)));
 
-        var allDiscountCardListResponse = discountCardController.findAllDiscountCards();
+        var allDiscountCardListResponse = discountCardController.findAllDiscountCards(PAGE, PAGE_SIZE);
 
         assertAll(
                 () -> assertThat(allDiscountCardListResponse.getStatusCode()).isEqualTo(HttpStatus.OK),
-                () -> assertThat(allDiscountCardListResponse.getBody().size()).isEqualTo(1),
-                () -> assertThat(allDiscountCardListResponse.getBody().get(0)).isEqualTo(discountCardDto)
+                () -> assertThat(allDiscountCardListResponse.getBody().getData().getContent().get(0)).isEqualTo(discountCardDto)
         );
 
-        verify(discountCardService).getAllDiscountCards();
+        verify(paginationProperties).getDefaultPageValue();
+        verify(paginationProperties).getDefaultPageSize();
+        verify(discountCardService).getAllDiscountCards(PAGE, PAGE_SIZE);
     }
 
     @Nested
@@ -100,7 +111,7 @@ class DiscountCardControllerTest {
 
             assertAll(
                     () -> assertThat(discountCardResponse.getStatusCode()).isEqualTo(HttpStatus.OK),
-                    () -> assertThat(discountCardResponse.getBody()).isEqualTo(discountCardDto)
+                    () -> assertThat(discountCardResponse.getBody().getData()).isEqualTo(discountCardDto)
             );
 
             verify(discountCardService).getDiscountCardById(anyLong());
@@ -118,38 +129,71 @@ class DiscountCardControllerTest {
     }
 
     @Nested
-    class PutDiscountCardByIdTest {
-        @DisplayName("Put Discount Card by ID")
+    class UpdateDiscountCardByIdTest {
+        @DisplayName("Update Discount Card by ID")
         @ParameterizedTest
         @ValueSource(longs = {1L, 2L, 3L})
-        void checkPutDiscountCardByIdShouldReturnDiscountCardDto(Long id) {
+        void checkUpdateDiscountCardByIdShouldReturnDiscountCardDto(Long id) {
             DiscountCardDto discountCardDto = DiscountCardDtoTestBuilder.aDiscountCardDto()
                     .withId(id)
                     .build();
 
             when(discountCardService.updateDiscountCardById(id, discountCardDto)).thenReturn(discountCardDto);
 
-            var discountCardResponse = discountCardController.putDiscountCardById(id, discountCardDto);
+            var discountCardResponse = discountCardController.updateDiscountCardById(id, discountCardDto);
 
             verify(discountCardService).updateDiscountCardById(anyLong(), discountCardDtoCaptor.capture());
 
             assertAll(
                     () -> assertThat(discountCardResponse.getStatusCode()).isEqualTo(HttpStatus.OK),
-                    () -> assertThat(discountCardResponse.getBody()).isEqualTo(discountCardDto),
+                    () -> assertThat(discountCardResponse.getBody().getData()).isEqualTo(discountCardDto),
+                    () -> assertThat(discountCardDtoCaptor.getValue()).isEqualTo(discountCardDto)
+            );
+        }
+
+        @DisplayName("Partially Update Discount Card by ID")
+        @ParameterizedTest
+        @ValueSource(longs = {1L, 2L, 3L})
+        void checkPartiallyUpdateDiscountCardByIdShouldReturnDiscountCardDto(Long id) {
+            DiscountCardDto discountCardDto = DiscountCardDtoTestBuilder.aDiscountCardDto()
+                    .withId(id)
+                    .build();
+
+            when(discountCardService.updateDiscountCardByIdPartially(id, discountCardDto)).thenReturn(discountCardDto);
+
+            var discountCardResponse = discountCardController.updateDiscountCardByIdPartially(id, discountCardDto);
+
+            verify(discountCardService).updateDiscountCardByIdPartially(anyLong(), discountCardDtoCaptor.capture());
+
+            assertAll(
+                    () -> assertThat(discountCardResponse.getStatusCode()).isEqualTo(HttpStatus.OK),
+                    () -> assertThat(discountCardResponse.getBody().getData()).isEqualTo(discountCardDto),
                     () -> assertThat(discountCardDtoCaptor.getValue()).isEqualTo(discountCardDto)
             );
         }
 
         @Test
-        @DisplayName("Put Discount Card by ID; not found")
-        void checkPutDiscountCardByIdShouldThrowDiscountCardNotFoundException() {
+        @DisplayName("Update Discount Card by ID; not found")
+        void checkUpdateDiscountCardByIdShouldThrowConversionException() {
             DiscountCardDto discountCardDto = DiscountCardDtoTestBuilder.aDiscountCardDto().build();
 
-            doThrow(DiscountCardNotFoundException.class).when(discountCardService).updateDiscountCardById(anyLong(), any());
+            doThrow(ConversionException.class).when(discountCardService).updateDiscountCardById(anyLong(), any());
 
-            assertThrows(DiscountCardNotFoundException.class, () -> discountCardController.putDiscountCardById(TEST_ID, discountCardDto));
+            assertThrows(ConversionException.class, () -> discountCardController.updateDiscountCardById(TEST_ID, discountCardDto));
 
             verify(discountCardService).updateDiscountCardById(anyLong(), any());
+        }
+
+        @Test
+        @DisplayName("Partially Update Discount Card by ID; not found")
+        void checkPartiallyUpdateDiscountCardByIdShouldThrowConversionException() {
+            DiscountCardDto discountCardDto = DiscountCardDtoTestBuilder.aDiscountCardDto().build();
+
+            doThrow(DiscountCardNotFoundException.class).when(discountCardService).updateDiscountCardByIdPartially(anyLong(), any());
+
+            assertThrows(DiscountCardNotFoundException.class, () -> discountCardController.updateDiscountCardByIdPartially(TEST_ID, discountCardDto));
+
+            verify(discountCardService).updateDiscountCardByIdPartially(anyLong(), any());
         }
     }
 

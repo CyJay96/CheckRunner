@@ -11,13 +11,16 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import ru.clevertec.checkrunner.builder.discountCard.DiscountCardDtoTestBuilder;
 import ru.clevertec.checkrunner.builder.discountCard.DiscountCardTestBuilder;
 import ru.clevertec.checkrunner.domain.DiscountCard;
 import ru.clevertec.checkrunner.dto.DiscountCardDto;
+import ru.clevertec.checkrunner.exception.ConversionException;
 import ru.clevertec.checkrunner.exception.DiscountCardNotFoundException;
-import ru.clevertec.checkrunner.mapper.DiscountCardMapper;
-import ru.clevertec.checkrunner.mapper.list.DiscountCardListMapper;
 import ru.clevertec.checkrunner.repository.DiscountCardRepository;
 import ru.clevertec.checkrunner.service.impl.DiscountCardServiceImpl;
 
@@ -31,8 +34,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static ru.clevertec.checkrunner.util.TestConstants.PAGE;
+import static ru.clevertec.checkrunner.util.TestConstants.PAGE_SIZE;
 import static ru.clevertec.checkrunner.util.TestConstants.TEST_ID;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,10 +48,7 @@ class DiscountCardServiceTest {
     private DiscountCardRepository discountCardRepository;
 
     @Mock
-    private DiscountCardMapper discountCardMapper;
-
-    @Mock
-    private DiscountCardListMapper discountCardListMapper;
+    private ConversionService conversionService;
 
     private DiscountCardService discountCardService;
 
@@ -54,7 +57,7 @@ class DiscountCardServiceTest {
 
     @BeforeEach
     void setUp() {
-        discountCardService = new DiscountCardServiceImpl(discountCardRepository, discountCardMapper, discountCardListMapper);
+        discountCardService = new DiscountCardServiceImpl(discountCardRepository, conversionService);
     }
 
     @Test
@@ -64,14 +67,13 @@ class DiscountCardServiceTest {
         DiscountCardDto discountCardDto = DiscountCardDtoTestBuilder.aDiscountCardDto().build();
 
         when(discountCardRepository.save(discountCard)).thenReturn(discountCard);
-        when(discountCardMapper.dtoToDomain(discountCardDto)).thenReturn(discountCard);
-        when(discountCardMapper.domainToDto(discountCard)).thenReturn(discountCardDto);
+        when(conversionService.convert(discountCardDto, DiscountCard.class)).thenReturn(discountCard);
+        when(conversionService.convert(discountCard, DiscountCardDto.class)).thenReturn(discountCardDto);
 
         DiscountCardDto discountCardDtoResp = discountCardService.createDiscountCard(discountCardDto);
 
         verify(discountCardRepository).save(discountCardCaptor.capture());
-        verify(discountCardMapper).dtoToDomain(any());
-        verify(discountCardMapper).domainToDto(any());
+        verify(conversionService, times(2)).convert(any(), any());
 
         assertAll(
                 () -> assertThat(discountCardDtoResp).isEqualTo(discountCardDto),
@@ -85,18 +87,15 @@ class DiscountCardServiceTest {
         DiscountCard discountCard = DiscountCardTestBuilder.aDiscountCard().build();
         DiscountCardDto discountCardDto = DiscountCardDtoTestBuilder.aDiscountCardDto().build();
 
-        when(discountCardRepository.findAll()).thenReturn(List.of(discountCard));
-        when(discountCardListMapper.domainToDto(List.of(discountCard))).thenReturn(List.of(discountCardDto));
+        when(discountCardRepository.findAll(PageRequest.of(PAGE, PAGE_SIZE))).thenReturn(new PageImpl<>(List.of(discountCard)));
+        when(conversionService.convert(discountCard, DiscountCardDto.class)).thenReturn(discountCardDto);
 
-        List<DiscountCardDto> discountCardDtoList = discountCardService.getAllDiscountCards();
+        Page<DiscountCardDto> discountCardDtoPage = discountCardService.getAllDiscountCards(PAGE, PAGE_SIZE);
 
-        assertAll(
-                () -> assertThat(discountCardDtoList.size()).isEqualTo(1),
-                () -> assertThat(discountCardDtoList.get(0)).isEqualTo(discountCardDto)
-        );
+        assertThat(discountCardDtoPage.getContent().get(0)).isEqualTo(discountCardDto);
 
-        verify(discountCardRepository).findAll();
-        verify(discountCardListMapper).domainToDto(any());
+        verify(discountCardRepository).findAll(PageRequest.of(PAGE, PAGE_SIZE));
+        verify(conversionService).convert(any(), any());
     }
 
     @Nested
@@ -113,14 +112,14 @@ class DiscountCardServiceTest {
                     .build();
 
             when(discountCardRepository.findById(id)).thenReturn(Optional.of(discountCard));
-            when(discountCardMapper.domainToDto(discountCard)).thenReturn(discountCardDto);
+            when(conversionService.convert(discountCard, DiscountCardDto.class)).thenReturn(discountCardDto);
 
             DiscountCardDto discountCardDtoResp = discountCardService.getDiscountCardById(id);
 
             assertThat(discountCardDtoResp).isEqualTo(discountCardDto);
 
             verify(discountCardRepository).findById(anyLong());
-            verify(discountCardMapper).domainToDto(any());
+            verify(conversionService).convert(any(), any());
         }
 
         @Test
@@ -147,15 +146,41 @@ class DiscountCardServiceTest {
                     .withId(id)
                     .build();
 
-            when(discountCardRepository.findById(id)).thenReturn(Optional.of(discountCard));
             when(discountCardRepository.save(discountCard)).thenReturn(discountCard);
-            when(discountCardMapper.domainToDto(discountCard)).thenReturn(discountCardDto);
+            when(conversionService.convert(discountCardDto, DiscountCard.class)).thenReturn(discountCard);
+            when(conversionService.convert(discountCard, DiscountCardDto.class)).thenReturn(discountCardDto);
 
             DiscountCardDto discountCardDtoResp = discountCardService.updateDiscountCardById(id, discountCardDto);
 
+            verify(discountCardRepository).save(discountCardCaptor.capture());
+            verify(conversionService, times(2)).convert(any(), any());
+
+            assertAll(
+                    () -> assertThat(discountCardDtoResp).isEqualTo(discountCardDto),
+                    () -> assertThat(discountCardCaptor.getValue()).isEqualTo(discountCard)
+            );
+        }
+
+        @DisplayName("Partially Update Discount Card by ID")
+        @ParameterizedTest
+        @ValueSource(longs = {1L, 2L, 3L})
+        void checkPartiallyUpdateDiscountCardByIdShouldReturnDiscountCardDto(Long id) {
+            DiscountCard discountCard = DiscountCardTestBuilder.aDiscountCard()
+                    .withId(id)
+                    .build();
+            DiscountCardDto discountCardDto = DiscountCardDtoTestBuilder.aDiscountCardDto()
+                    .withId(id)
+                    .build();
+
+            when(discountCardRepository.findById(id)).thenReturn(Optional.of(discountCard));
+            when(discountCardRepository.save(discountCard)).thenReturn(discountCard);
+            when(conversionService.convert(discountCard, DiscountCardDto.class)).thenReturn(discountCardDto);
+
+            DiscountCardDto discountCardDtoResp = discountCardService.updateDiscountCardByIdPartially(id, discountCardDto);
+
             verify(discountCardRepository).findById(anyLong());
             verify(discountCardRepository).save(discountCardCaptor.capture());
-            verify(discountCardMapper).domainToDto(any());
+            verify(conversionService).convert(any(), any());
 
             assertAll(
                     () -> assertThat(discountCardDtoResp).isEqualTo(discountCardDto),
@@ -168,9 +193,21 @@ class DiscountCardServiceTest {
         void checkUpdateDiscountCardByIdShouldThrowDiscountCardNotFoundException() {
             DiscountCardDto discountCardDto = DiscountCardDtoTestBuilder.aDiscountCardDto().build();
 
+            doThrow(ConversionException.class).when(conversionService).convert(any(), any());
+
+            assertThrows(ConversionException.class, () -> discountCardService.updateDiscountCardById(TEST_ID, discountCardDto));
+
+            verify(conversionService).convert(any(), any());
+        }
+
+        @Test
+        @DisplayName("Partially Update Discount Card by ID; not found")
+        void checkPartiallyUpdateDiscountCardByIdShouldThrowDiscountCardNotFoundException() {
+            DiscountCardDto discountCardDto = DiscountCardDtoTestBuilder.aDiscountCardDto().build();
+
             doThrow(DiscountCardNotFoundException.class).when(discountCardRepository).findById(anyLong());
 
-            assertThrows(DiscountCardNotFoundException.class, () -> discountCardService.updateDiscountCardById(TEST_ID, discountCardDto));
+            assertThrows(DiscountCardNotFoundException.class, () -> discountCardService.updateDiscountCardByIdPartially(TEST_ID, discountCardDto));
 
             verify(discountCardRepository).findById(anyLong());
         }

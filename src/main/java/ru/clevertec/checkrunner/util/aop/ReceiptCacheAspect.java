@@ -19,8 +19,8 @@ public class ReceiptCacheAspect {
     private final Cache<Long, Receipt> cache;
 
     public ReceiptCacheAspect(
-            @Value("${cache.algorithm}") String cacheType,
-            @Value("${cache.capacity}") int cacheCapacity
+            @Value("${app.cache.algorithm}") String cacheType,
+            @Value("${app.cache.capacity}") int cacheCapacity
     ) {
         Factory<Long, Receipt> factory = new CacheFactory<>();
         cache = factory.getCache(cacheType, cacheCapacity);

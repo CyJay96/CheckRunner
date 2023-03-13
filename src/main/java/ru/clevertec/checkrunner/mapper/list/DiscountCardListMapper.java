@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = DiscountCardMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface DiscountCardListMapper {
 
-    List<DiscountCard> dtoToDomain(List<DiscountCardDto> discountCardDtos);
+    List<DiscountCard> dtoToDomain(List<DiscountCardDto> discountCardDtoList);
 
     List<DiscountCardDto> domainToDto(List<DiscountCard> discountCards);
 }

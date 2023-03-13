@@ -20,8 +20,8 @@ public class DiscountCardCacheAspect {
     private final Cache<Long, DiscountCard> cache;
 
     public DiscountCardCacheAspect(
-            @Value("${cache.algorithm}") String cacheType,
-            @Value("${cache.capacity}") int cacheCapacity
+            @Value("${app.cache.algorithm}") String cacheType,
+            @Value("${app.cache.capacity}") int cacheCapacity
     ) {
         Factory<Long, DiscountCard> factory = new CacheFactory<>();
         cache = factory.getCache(cacheType, cacheCapacity);

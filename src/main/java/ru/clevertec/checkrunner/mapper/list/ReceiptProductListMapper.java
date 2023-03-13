@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = ReceiptProductMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface ReceiptProductListMapper {
 
-    List<ReceiptProduct> dtoToDomain(List<ReceiptProductDto> receiptProductDtos);
+    List<ReceiptProduct> dtoToDomain(List<ReceiptProductDto> receiptProductDtoList);
 
     List<ReceiptProductDto> domainToDto(List<ReceiptProduct> receiptProducts);
 }

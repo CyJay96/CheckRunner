@@ -19,8 +19,8 @@ public class ProductCacheAspect {
     private final Cache<Long, Product> cache;
 
     public ProductCacheAspect(
-            @Value("${cache.algorithm}") String cacheType,
-            @Value("${cache.capacity}") int cacheCapacity
+            @Value("${app.cache.algorithm}") String cacheType,
+            @Value("${app.cache.capacity}") int cacheCapacity
     ) {
         Factory<Long, Product> factory = new CacheFactory<>();
         cache = factory.getCache(cacheType, cacheCapacity);

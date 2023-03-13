@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.clevertec.checkrunner.dto.response.ApiResponse;
+import ru.clevertec.checkrunner.exception.ConversionException;
 import ru.clevertec.checkrunner.exception.DataNotFoundException;
 import ru.clevertec.checkrunner.exception.DiscountCardNotFoundException;
 import ru.clevertec.checkrunner.exception.ProductNotFoundException;
@@ -71,6 +72,14 @@ public class GlobalExceptionHandler {
             HttpServletRequest request
     ) {
         return generateErrorResponse(exception, HttpStatus.NOT_FOUND, request, ApiResponse.Color.DANGER);
+    }
+
+    @ExceptionHandler(ConversionException.class)
+    public ResponseEntity<ApiResponse<Void>> handleConversionException(
+            RuntimeException exception,
+            HttpServletRequest request
+    ) {
+        return generateErrorResponse(exception, HttpStatus.INTERNAL_SERVER_ERROR, request, ApiResponse.Color.DANGER);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
