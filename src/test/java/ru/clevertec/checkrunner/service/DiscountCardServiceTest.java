@@ -161,10 +161,10 @@ class DiscountCardServiceTest {
             );
         }
 
-        @DisplayName("Partially Update Discount Card by ID")
+        @DisplayName("Partial Update Discount Card by ID")
         @ParameterizedTest
         @ValueSource(longs = {1L, 2L, 3L})
-        void checkPartiallyUpdateDiscountCardByIdShouldReturnDiscountCardDto(Long id) {
+        void checkPartialUpdateDiscountCardByIdShouldReturnDiscountCardDto(Long id) {
             DiscountCard discountCard = DiscountCardTestBuilder.aDiscountCard()
                     .withId(id)
                     .build();

@@ -110,7 +110,7 @@ public class DiscountCardController {
         DiscountCardDto discountCard = discountCardService.updateDiscountCardByIdPartially(id, discountCardDto);
 
         return apiResponseEntity(
-                "Changes were applied to the Discount Card with ID " + id,
+                "Partial changes were applied to the Discount Card with ID " + id,
                 DISCOUNT_CARD_API_PATH + "/" + id,
                 HttpStatus.OK,
                 ApiResponse.Color.SUCCESS,

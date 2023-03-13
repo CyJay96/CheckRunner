@@ -12,23 +12,30 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import ru.clevertec.checkrunner.builder.product.ProductDtoTestBuilder;
+import ru.clevertec.checkrunner.config.PaginationProperties;
 import ru.clevertec.checkrunner.dto.ProductDto;
+import ru.clevertec.checkrunner.exception.ConversionException;
 import ru.clevertec.checkrunner.exception.ProductNotFoundException;
 import ru.clevertec.checkrunner.service.ProductService;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static ru.clevertec.checkrunner.util.TestConstants.PAGE;
+import static ru.clevertec.checkrunner.util.TestConstants.PAGE_SIZE;
 import static ru.clevertec.checkrunner.util.TestConstants.TEST_ID;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,6 +43,9 @@ class ProductControllerTest {
 
     @Mock
     private ProductService productService;
+
+    @Mock
+    private PaginationProperties paginationProperties;
 
     @InjectMocks
     private ProductController productController;
@@ -45,7 +55,7 @@ class ProductControllerTest {
 
     @BeforeEach
     void setUp() {
-        productController = new ProductController(productService);
+        productController = new ProductController(productService, paginationProperties);
     }
 
     @Test
@@ -61,27 +71,30 @@ class ProductControllerTest {
 
         assertAll(
                 () -> assertThat(productDtoResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED),
-                () -> assertThat(productDtoResponse.getBody()).isEqualTo(productDto),
+                () -> assertThat(productDtoResponse.getBody().getData()).isEqualTo(productDto),
                 () -> assertThat(productDtoCaptor.getValue()).isEqualTo(productDto)
         );
     }
 
     @Test
     @DisplayName("Find all Products")
-    void checkFindAllProductsShouldReturnProductDtoList() {
+    void checkFindAllProductsShouldReturnProductDtoPage() {
         ProductDto productDto = ProductDtoTestBuilder.aProductDto().build();
 
-        when(productService.getAllProducts()).thenReturn(List.of(productDto));
+        when(paginationProperties.getDefaultPageValue()).thenReturn(PAGE);
+        when(paginationProperties.getDefaultPageSize()).thenReturn(PAGE_SIZE);
+        when(productService.getAllProducts(PAGE, PAGE_SIZE)).thenReturn(new PageImpl<>(List.of(productDto)));
 
-        var productDtoListResponse = productController.findAllProducts();
+        var productDtoListResponse = productController.findAllProducts(PAGE, PAGE_SIZE);
 
         assertAll(
                 () -> assertThat(productDtoListResponse.getStatusCode()).isEqualTo(HttpStatus.OK),
-                () -> assertThat(productDtoListResponse.getBody().size()).isEqualTo(1),
-                () -> assertThat(productDtoListResponse.getBody().get(0)).isEqualTo(productDto)
+                () -> assertThat(productDtoListResponse.getBody().getData().getContent().get(0)).isEqualTo(productDto)
         );
 
-        verify(productService).getAllProducts();
+        verify(paginationProperties).getDefaultPageValue();
+        verify(paginationProperties).getDefaultPageSize();
+        verify(productService).getAllProducts(anyInt(), anyInt());
     }
 
     @Nested
@@ -100,7 +113,7 @@ class ProductControllerTest {
 
             assertAll(
                     () -> assertThat(productDtoResponse.getStatusCode()).isEqualTo(HttpStatus.OK),
-                    () -> assertThat(productDtoResponse.getBody()).isEqualTo(productDto)
+                    () -> assertThat(Objects.requireNonNull(productDtoResponse.getBody()).getData()).isEqualTo(productDto)
             );
 
             verify(productService).getProductById(anyLong());
@@ -118,38 +131,71 @@ class ProductControllerTest {
     }
 
     @Nested
-    public class PutProductByIdTest {
-        @DisplayName("Put Product by ID")
+    public class UpdateProductByIdTest {
+        @DisplayName("Update Product by ID")
         @ParameterizedTest
         @ValueSource(longs = {1L, 2L, 3L})
-        void checkPutProductByIdShouldReturnProductDto(Long id) {
+        void checkUpdateProductByIdShouldReturnProductDto(Long id) {
             ProductDto productDto = ProductDtoTestBuilder.aProductDto()
                     .withId(id)
                     .build();
 
             when(productService.updateProductById(id, productDto)).thenReturn(productDto);
 
-            var productDtoResponse = productController.putProductById(id, productDto);
+            var productDtoResponse = productController.updateProductById(id, productDto);
 
             verify(productService).updateProductById(anyLong(), productDtoCaptor.capture());
 
             assertAll(
                     () -> assertThat(productDtoResponse.getStatusCode()).isEqualTo(HttpStatus.OK),
-                    () -> assertThat(productDtoResponse.getBody()).isEqualTo(productDto),
+                    () -> assertThat(Objects.requireNonNull(productDtoResponse.getBody()).getData()).isEqualTo(productDto),
+                    () -> assertThat(productDtoCaptor.getValue()).isEqualTo(productDto)
+            );
+        }
+
+        @DisplayName("Partial Update Product by ID")
+        @ParameterizedTest
+        @ValueSource(longs = {1L, 2L, 3L})
+        void checkPartialUpdateProductByIdShouldReturnProductDto(Long id) {
+            ProductDto productDto = ProductDtoTestBuilder.aProductDto()
+                    .withId(id)
+                    .build();
+
+            when(productService.updateProductByIdPartially(id, productDto)).thenReturn(productDto);
+
+            var productDtoResponse = productController.updateProductByIdPartially(id, productDto);
+
+            verify(productService).updateProductByIdPartially(anyLong(), productDtoCaptor.capture());
+
+            assertAll(
+                    () -> assertThat(productDtoResponse.getStatusCode()).isEqualTo(HttpStatus.OK),
+                    () -> assertThat(Objects.requireNonNull(productDtoResponse.getBody()).getData()).isEqualTo(productDto),
                     () -> assertThat(productDtoCaptor.getValue()).isEqualTo(productDto)
             );
         }
 
         @Test
-        @DisplayName("Put Product by ID; not found")
-        void checkPutProductByIdShouldThrowProductNotFoundException() {
+        @DisplayName("Update Product by ID; not found")
+        void checkUpdateProductByIdShouldThrowProductNotFoundException() {
             ProductDto productDto = ProductDtoTestBuilder.aProductDto().build();
 
-            doThrow(ProductNotFoundException.class).when(productService).updateProductById(anyLong(), any());
+            doThrow(ConversionException.class).when(productService).updateProductById(anyLong(), any());
 
-            assertThrows(ProductNotFoundException.class, () -> productController.putProductById(TEST_ID, productDto));
+            assertThrows(ConversionException.class, () -> productController.updateProductById(TEST_ID, productDto));
 
             verify(productService).updateProductById(anyLong(), any());
+        }
+
+        @Test
+        @DisplayName("Partial Update Product by ID; not found")
+        void checkPartialUpdateProductByIdShouldThrowProductNotFoundException() {
+            ProductDto productDto = ProductDtoTestBuilder.aProductDto().build();
+
+            doThrow(ProductNotFoundException.class).when(productService).updateProductByIdPartially(anyLong(), any());
+
+            assertThrows(ProductNotFoundException.class, () -> productController.updateProductByIdPartially(TEST_ID, productDto));
+
+            verify(productService).updateProductByIdPartially(anyLong(), any());
         }
     }
 
