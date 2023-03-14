@@ -28,37 +28,37 @@ public class ReceiptDtoResponse implements Serializable {
     @JsonProperty(value = "title")
     private String title;
 
-    @JsonProperty(value = "shop_title")
+    @JsonProperty(value = "shopTitle")
     private String shopTitle;
 
-    @JsonProperty(value = "shop_address")
+    @JsonProperty(value = "shopAddress")
     private String shopAddress;
 
-    @JsonProperty(value = "phone_number")
+    @JsonProperty(value = "phoneNumber")
     private String phoneNumber;
 
-    @JsonProperty(value = "cashier_number")
+    @JsonProperty(value = "cashierNumber")
     private Long cashierNumber;
 
-    @JsonProperty(value = "creation_date")
+    @JsonProperty(value = "creationDate")
     private OffsetDateTime creationDate;
 
-    @JsonProperty(value = "receipt_product_dtos")
-    private List<ReceiptProductDto> receiptProductDtos;
+    @JsonProperty(value = "receiptProducts")
+    private List<ReceiptProductDto> receiptProducts;
 
-    @JsonProperty(value = "discount_card_id")
+    @JsonProperty(value = "discountCardId")
     private Long discountCardId;
 
-    @JsonProperty(value = "is_discount_card_presented")
+    @JsonProperty(value = "isDiscountCardPresented")
     private boolean isDiscountCardPresented;
 
-    @JsonProperty(value = "discount_card_price")
+    @JsonProperty(value = "discountCardPrice")
     private BigDecimal discountCardPrice;
 
-    @JsonProperty(value = "promotional_percent")
+    @JsonProperty(value = "promotionalPercent")
     private BigDecimal promotionalPercent;
 
-    @JsonProperty(value = "promotional_price")
+    @JsonProperty(value = "promotionalPrice")
     private BigDecimal promotionalPrice;
 
     @JsonProperty(value = "total")

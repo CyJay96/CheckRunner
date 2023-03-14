@@ -1,13 +1,11 @@
 package ru.clevertec.checkrunner.converter;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Service;
 import ru.clevertec.checkrunner.domain.Product;
 import ru.clevertec.checkrunner.dto.ProductDto;
 
 @Service
-@RequiredArgsConstructor
 public class ProductToDtoConverter implements Converter<Product, ProductDto> {
 
     @Override

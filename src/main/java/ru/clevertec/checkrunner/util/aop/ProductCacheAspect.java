@@ -26,30 +26,30 @@ public class ProductCacheAspect {
         cache = factory.getCache(cacheType, cacheCapacity);
     }
 
-    @Around("execution(* ru.clevertec.checkrunner.repository.ProductRepository.save(..))")
-    public Product aroundCreateMethod(ProceedingJoinPoint joinPoint) throws Throwable {
-        Product product = (Product) joinPoint.proceed();
-        cache.put(product.getId(), product);
-        return product;
-    }
-
-    @Around("execution(* ru.clevertec.checkrunner.repository.ProductRepository.findById(..))")
-    public Optional<Product> aroundFindByIdMethod(ProceedingJoinPoint joinPoint) throws Throwable {
-        Long id = (Long) joinPoint.getArgs()[0];
-        if (cache.containsKey(id)) {
-            return Optional.of(cache.get(id));
-        }
-        Optional<Product> productOptional = (Optional<Product>) joinPoint.proceed();
-        productOptional.ifPresent(product -> cache.put(product.getId(), product));
-        return productOptional;
-    }
-
-    @Around("execution(* ru.clevertec.checkrunner.repository.ProductRepository.deleteById(..))")
-    public Object aroundDeleteByIdMethod(ProceedingJoinPoint joinPoint) throws Throwable {
-        Long id = (Long) joinPoint.getArgs()[0];
-        if (cache.containsKey(id)) {
-            cache.remove(id);
-        }
-        return joinPoint.proceed();
-    }
+//    @Around("execution(* ru.clevertec.checkrunner.repository.ProductRepository.save(..))")
+//    public Product aroundCreateMethod(ProceedingJoinPoint joinPoint) throws Throwable {
+//        Product product = (Product) joinPoint.proceed();
+//        cache.put(product.getId(), product);
+//        return product;
+//    }
+//
+//    @Around("execution(* ru.clevertec.checkrunner.repository.ProductRepository.findById(..))")
+//    public Optional<Product> aroundFindByIdMethod(ProceedingJoinPoint joinPoint) throws Throwable {
+//        Long id = (Long) joinPoint.getArgs()[0];
+//        if (cache.containsKey(id)) {
+//            return Optional.of(cache.get(id));
+//        }
+//        Optional<Product> productOptional = (Optional<Product>) joinPoint.proceed();
+//        productOptional.ifPresent(product -> cache.put(product.getId(), product));
+//        return productOptional;
+//    }
+//
+//    @Around("execution(* ru.clevertec.checkrunner.repository.ProductRepository.deleteById(..))")
+//    public Object aroundDeleteByIdMethod(ProceedingJoinPoint joinPoint) throws Throwable {
+//        Long id = (Long) joinPoint.getArgs()[0];
+//        if (cache.containsKey(id)) {
+//            cache.remove(id);
+//        }
+//        return joinPoint.proceed();
+//    }
 }

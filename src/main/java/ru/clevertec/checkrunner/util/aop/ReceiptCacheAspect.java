@@ -26,31 +26,30 @@ public class ReceiptCacheAspect {
         cache = factory.getCache(cacheType, cacheCapacity);
     }
 
-    @Around("execution(* ru.clevertec.checkrunner.repository.ReceiptRepository.save(..))")
-    public Receipt aroundCreateMethod(ProceedingJoinPoint joinPoint) throws Throwable {
-        Receipt receipt = (Receipt) joinPoint.proceed();
-        cache.put(receipt.getId(), receipt);
-        return receipt;
-    }
-
-    @Around("execution(* ru.clevertec.checkrunner.repository.ReceiptRepository.findById(..))")
-    public Optional<Receipt> aroundFindByIdMethod(ProceedingJoinPoint joinPoint) throws Throwable {
-        Long id = (Long) joinPoint.getArgs()[0];
-        if (cache.containsKey(id)) {
-            return Optional.of(cache.get(id));
-        } else {
-            Optional<Receipt> receiptOptional = (Optional<Receipt>) joinPoint.proceed();
-            receiptOptional.ifPresent(receipt -> cache.put(receipt.getId(), receipt));
-            return receiptOptional;
-        }
-    }
-
-    @Around("execution(* ru.clevertec.checkrunner.repository.ReceiptRepository.deleteById(..))")
-    public Object aroundDeleteByIdMethod(ProceedingJoinPoint joinPoint) throws Throwable {
-        Long id = (Long) joinPoint.getArgs()[0];
-        if (cache.containsKey(id)) {
-            cache.remove(id);
-        }
-        return joinPoint.proceed();
-    }
+//    @Around("execution(* ru.clevertec.checkrunner.repository.ReceiptRepository.save(..))")
+//    public Receipt aroundCreateMethod(ProceedingJoinPoint joinPoint) throws Throwable {
+//        Receipt receipt = (Receipt) joinPoint.proceed();
+//        cache.put(receipt.getId(), receipt);
+//        return receipt;
+//    }
+//
+//    @Around("execution(* ru.clevertec.checkrunner.repository.ReceiptRepository.findById(..))")
+//    public Optional<Receipt> aroundFindByIdMethod(ProceedingJoinPoint joinPoint) throws Throwable {
+//        Long id = (Long) joinPoint.getArgs()[0];
+//        if (cache.containsKey(id)) {
+////            return Optional.of(cache.get(id));
+//        }
+//        Optional<Receipt> receiptOptional = (Optional<Receipt>) joinPoint.proceed();
+//        receiptOptional.ifPresent(receipt -> cache.put(receipt.getId(), receipt));
+//        return receiptOptional;
+//    }
+//
+//    @Around("execution(* ru.clevertec.checkrunner.repository.ReceiptRepository.deleteById(..))")
+//    public Object aroundDeleteByIdMethod(ProceedingJoinPoint joinPoint) throws Throwable {
+//        Long id = (Long) joinPoint.getArgs()[0];
+//        if (cache.containsKey(id)) {
+//            cache.remove(id);
+//        }
+//        return joinPoint.proceed();
+//    }
 }

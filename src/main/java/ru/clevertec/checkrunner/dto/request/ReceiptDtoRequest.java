@@ -38,25 +38,25 @@ public class ReceiptDtoRequest implements Serializable {
     @NotNull(message = "Shop title cannot be null")
     @NotBlank(message = "Shop title cannot be empty")
     @Length(max = 255, message = "Shop title is too long")
-    @JsonProperty(value = "shop_title")
+    @JsonProperty(value = "shopTitle")
     private String shopTitle;
 
     @NotNull(message = "Shop address cannot be null")
     @NotBlank(message = "Shop address cannot be empty")
     @Length(max = 255, message = "hop address is too long")
-    @JsonProperty(value = "shop_address")
+    @JsonProperty(value = "shopAddress")
     private String shopAddress;
 
     @NotNull(message = "Phone number cannot be null")
     @NotBlank(message = "Phone number cannot be empty")
     @Length(max = 255, message = "Phone number is too long")
     @Pattern(regexp = PHONE_REGEX, message = "Incorrect phone number")
-    @JsonProperty(value = "phone_number")
+    @JsonProperty(value = "phoneNumber")
     private String phoneNumber;
 
     @NotNull(message = "Cashier number cannot be null")
     @Positive(message = "Cashier number must be positive")
-    @JsonProperty(value = "cashier_number")
+    @JsonProperty(value = "cashierNumber")
     private Long cashierNumber;
 
     @NotNull(message = "Products cannot be null")
@@ -65,11 +65,11 @@ public class ReceiptDtoRequest implements Serializable {
     private Map<Long, Long> products;
 
     @Positive(message = "Discount Card number must be positive")
-    @JsonProperty(value = "discount_card_number")
+    @JsonProperty(value = "discountCardNumber")
     private Long discountCardNumber;
 
     @NotNull(message = "Promotional percent cannot be null")
     @PositiveOrZero(message = "Promotional percent must be positive or zero")
-    @JsonProperty(value = "promotional_percent")
+    @JsonProperty(value = "promotionalPercent")
     private BigDecimal promotionalPercent;
 }

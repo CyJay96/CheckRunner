@@ -103,7 +103,7 @@ public class ProductController {
     @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse<ProductDto>> updateProductByIdPartially(
             @PathVariable @Valid @NotNull Long id,
-            @RequestBody @Valid ProductDto productDto
+            @RequestBody ProductDto productDto
     ) {
         ProductDto product = productService.updateProductByIdPartially(id, productDto);
 

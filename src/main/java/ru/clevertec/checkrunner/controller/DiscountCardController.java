@@ -105,7 +105,7 @@ public class DiscountCardController {
     @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse<DiscountCardDto>> updateDiscountCardByIdPartially(
             @PathVariable @Valid @NotNull Long id,
-            @RequestBody @Valid DiscountCardDto discountCardDto
+            @RequestBody DiscountCardDto discountCardDto
     ) {
         DiscountCardDto discountCard = discountCardService.updateDiscountCardByIdPartially(id, discountCardDto);
 
