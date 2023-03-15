@@ -111,7 +111,7 @@ public class ReceiptController {
         ReceiptDtoResponse receipt = receiptService.updateReceiptByIdPartially(id, receiptDtoRequest);
 
         return apiResponseEntity(
-                "Changes were applied to the Receipt with ID " + id,
+                "Partial changes were applied to the Receipt with ID " + id,
                 RECEIPT_API_PATH + "/" + id,
                 HttpStatus.OK,
                 ApiResponse.Color.SUCCESS,

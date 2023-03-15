@@ -39,7 +39,7 @@ public class ReceiptDtoResponseTestBuilder implements TestBuilder<ReceiptDtoResp
 
     private OffsetDateTime creationDate = TEST_DATE;
 
-    private List<ReceiptProductDto> receiptProductDtos = Collections.emptyList();
+    private List<ReceiptProductDto> receiptProducts = Collections.emptyList();
 
     private Long discountCardId = TEST_NUMBER;
 
@@ -62,7 +62,7 @@ public class ReceiptDtoResponseTestBuilder implements TestBuilder<ReceiptDtoResp
         receiptDtoResponse.setPhoneNumber(phoneNumber);
         receiptDtoResponse.setCashierNumber(cashierNumber);
         receiptDtoResponse.setCreationDate(creationDate);
-        receiptDtoResponse.setReceiptProductDtos(receiptProductDtos);
+        receiptDtoResponse.setReceiptProducts(receiptProducts);
         receiptDtoResponse.setDiscountCardId(discountCardId);
         receiptDtoResponse.setDiscountCardPresented(isDiscountCardPresented);
         receiptDtoResponse.setDiscountCardPrice(discountCardPrice);

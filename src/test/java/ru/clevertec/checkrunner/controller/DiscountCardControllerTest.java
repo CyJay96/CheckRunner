@@ -87,14 +87,14 @@ class DiscountCardControllerTest {
 
         var allDiscountCardListResponse = discountCardController.findAllDiscountCards(PAGE, PAGE_SIZE);
 
+        verify(paginationProperties).getDefaultPageValue();
+        verify(paginationProperties).getDefaultPageSize();
+        verify(discountCardService).getAllDiscountCards(anyInt(), anyInt());
+
         assertAll(
                 () -> assertThat(allDiscountCardListResponse.getStatusCode()).isEqualTo(HttpStatus.OK),
                 () -> assertThat(Objects.requireNonNull(allDiscountCardListResponse.getBody()).getData().getContent().get(0)).isEqualTo(discountCardDto)
         );
-
-        verify(paginationProperties).getDefaultPageValue();
-        verify(paginationProperties).getDefaultPageSize();
-        verify(discountCardService).getAllDiscountCards(anyInt(), anyInt());
     }
 
     @Nested
@@ -111,12 +111,12 @@ class DiscountCardControllerTest {
 
             var discountCardResponse = discountCardController.findDiscountCardById(id);
 
+            verify(discountCardService).getDiscountCardById(anyLong());
+
             assertAll(
                     () -> assertThat(discountCardResponse.getStatusCode()).isEqualTo(HttpStatus.OK),
                     () -> assertThat(Objects.requireNonNull(discountCardResponse.getBody()).getData()).isEqualTo(discountCardDto)
             );
-
-            verify(discountCardService).getDiscountCardById(anyLong());
         }
 
         @Test
@@ -209,9 +209,9 @@ class DiscountCardControllerTest {
 
             var voidResponse = discountCardController.deleteDiscountCardById(id);
 
-            assertThat(voidResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
-
             verify(discountCardService).deleteDiscountCardById(anyLong());
+
+            assertThat(voidResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         }
 
         @Test

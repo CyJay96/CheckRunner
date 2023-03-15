@@ -11,14 +11,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import ru.clevertec.checkrunner.builder.product.ProductDtoTestBuilder;
 import ru.clevertec.checkrunner.builder.product.ProductTestBuilder;
 import ru.clevertec.checkrunner.domain.Product;
 import ru.clevertec.checkrunner.dto.ProductDto;
+import ru.clevertec.checkrunner.exception.ConversionException;
 import ru.clevertec.checkrunner.exception.ProductNotFoundException;
 import ru.clevertec.checkrunner.repository.ProductRepository;
 import ru.clevertec.checkrunner.service.impl.ProductServiceImpl;
@@ -86,15 +87,15 @@ class ProductServiceTest {
         Product product = ProductTestBuilder.aProduct().build();
         ProductDto productDto = ProductDtoTestBuilder.aProductDto().build();
 
-        when(productRepository.findAll()).thenReturn(List.of(product));
+        when(productRepository.findAll(PageRequest.of(PAGE, PAGE_SIZE))).thenReturn(new PageImpl<>(List.of(product)));
         when(conversionService.convert(product, ProductDto.class)).thenReturn(productDto);
 
         Page<ProductDto> productDtoPage = productService.getAllProducts(PAGE, PAGE_SIZE);
 
-        assertThat(productDtoPage.getContent().get(0)).isEqualTo(productDto);
-
         verify(productRepository).findAll(PageRequest.of(PAGE, PAGE_SIZE));
         verify(conversionService).convert(any(), any());
+
+        assertThat(productDtoPage.getContent().get(0)).isEqualTo(productDto);
     }
 
     @Nested
@@ -115,10 +116,10 @@ class ProductServiceTest {
 
             ProductDto productDtoResp = productService.getProductById(id);
 
-            assertThat(productDtoResp).isEqualTo(productDto);
-
             verify(productRepository).findById(anyLong());
             verify(conversionService).convert(any(), any());
+
+            assertThat(productDtoResp).isEqualTo(productDto);
         }
 
         @Test
@@ -192,11 +193,11 @@ class ProductServiceTest {
         void checkUpdateProductByIdShouldThrowProductNotFoundException() {
             ProductDto productDto = ProductDtoTestBuilder.aProductDto().build();
 
-            doThrow(ConversionException.class).when(productRepository).findById(anyLong());
+            doThrow(ConversionException.class).when(conversionService).convert(productDto, Product.class);
 
             assertThrows(ConversionException.class, () -> productService.updateProductById(TEST_ID, productDto));
 
-            verify(productRepository).findById(anyLong());
+            verify(conversionService).convert(any(), any());
         }
 
         @Test

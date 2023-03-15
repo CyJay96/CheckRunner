@@ -71,7 +71,7 @@ class ProductControllerTest {
 
         assertAll(
                 () -> assertThat(productDtoResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED),
-                () -> assertThat(productDtoResponse.getBody().getData()).isEqualTo(productDto),
+                () -> assertThat(Objects.requireNonNull(productDtoResponse.getBody()).getData()).isEqualTo(productDto),
                 () -> assertThat(productDtoCaptor.getValue()).isEqualTo(productDto)
         );
     }
@@ -87,14 +87,14 @@ class ProductControllerTest {
 
         var productDtoListResponse = productController.findAllProducts(PAGE, PAGE_SIZE);
 
-        assertAll(
-                () -> assertThat(productDtoListResponse.getStatusCode()).isEqualTo(HttpStatus.OK),
-                () -> assertThat(productDtoListResponse.getBody().getData().getContent().get(0)).isEqualTo(productDto)
-        );
-
         verify(paginationProperties).getDefaultPageValue();
         verify(paginationProperties).getDefaultPageSize();
         verify(productService).getAllProducts(anyInt(), anyInt());
+
+        assertAll(
+                () -> assertThat(productDtoListResponse.getStatusCode()).isEqualTo(HttpStatus.OK),
+                () -> assertThat(Objects.requireNonNull(productDtoListResponse.getBody()).getData().getContent().get(0)).isEqualTo(productDto)
+        );
     }
 
     @Nested
@@ -111,12 +111,12 @@ class ProductControllerTest {
 
             var productDtoResponse = productController.findProductById(id);
 
+            verify(productService).getProductById(anyLong());
+
             assertAll(
                     () -> assertThat(productDtoResponse.getStatusCode()).isEqualTo(HttpStatus.OK),
                     () -> assertThat(Objects.requireNonNull(productDtoResponse.getBody()).getData()).isEqualTo(productDto)
             );
-
-            verify(productService).getProductById(anyLong());
         }
 
         @Test
@@ -209,9 +209,9 @@ class ProductControllerTest {
 
             var voidResponse = productController.deleteProductById(id);
 
-            assertThat(voidResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
-
             verify(productService).deleteProductById(anyLong());
+
+            assertThat(voidResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         }
 
         @Test

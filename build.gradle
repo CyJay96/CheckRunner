@@ -34,12 +34,9 @@ dependencies {
     testImplementation 'com.h2database:h2'
     implementation 'org.liquibase:liquibase-core'
 
-    // Lombok and MapStruct
+    // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    implementation 'org.mapstruct:mapstruct:1.5.3.Final'
-    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.1.0'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
 
     // Configuration Processor
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"

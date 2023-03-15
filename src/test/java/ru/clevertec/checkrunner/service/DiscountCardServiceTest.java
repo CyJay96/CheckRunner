@@ -92,10 +92,10 @@ class DiscountCardServiceTest {
 
         Page<DiscountCardDto> discountCardDtoPage = discountCardService.getAllDiscountCards(PAGE, PAGE_SIZE);
 
-        assertThat(discountCardDtoPage.getContent().get(0)).isEqualTo(discountCardDto);
-
         verify(discountCardRepository).findAll(PageRequest.of(PAGE, PAGE_SIZE));
         verify(conversionService).convert(any(), any());
+
+        assertThat(discountCardDtoPage.getContent().get(0)).isEqualTo(discountCardDto);
     }
 
     @Nested
@@ -116,10 +116,10 @@ class DiscountCardServiceTest {
 
             DiscountCardDto discountCardDtoResp = discountCardService.getDiscountCardById(id);
 
-            assertThat(discountCardDtoResp).isEqualTo(discountCardDto);
-
             verify(discountCardRepository).findById(anyLong());
             verify(conversionService).convert(any(), any());
+
+            assertThat(discountCardDtoResp).isEqualTo(discountCardDto);
         }
 
         @Test
@@ -193,7 +193,7 @@ class DiscountCardServiceTest {
         void checkUpdateDiscountCardByIdShouldThrowDiscountCardNotFoundException() {
             DiscountCardDto discountCardDto = DiscountCardDtoTestBuilder.aDiscountCardDto().build();
 
-            doThrow(ConversionException.class).when(conversionService).convert(any(), any());
+            doThrow(ConversionException.class).when(conversionService).convert(discountCardDto, DiscountCard.class);
 
             assertThrows(ConversionException.class, () -> discountCardService.updateDiscountCardById(TEST_ID, discountCardDto));
 

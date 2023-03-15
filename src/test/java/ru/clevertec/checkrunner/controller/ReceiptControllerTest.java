@@ -12,27 +12,34 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import ru.clevertec.checkrunner.builder.receipt.ReceiptDtoRequestTestBuilder;
 import ru.clevertec.checkrunner.builder.receipt.ReceiptDtoResponseTestBuilder;
+import ru.clevertec.checkrunner.config.PaginationProperties;
 import ru.clevertec.checkrunner.dto.request.ReceiptDtoRequest;
 import ru.clevertec.checkrunner.dto.response.ReceiptDtoResponse;
+import ru.clevertec.checkrunner.exception.ConversionException;
 import ru.clevertec.checkrunner.exception.ReceiptNotFoundException;
 import ru.clevertec.checkrunner.service.ReceiptFileService;
 import ru.clevertec.checkrunner.service.ReceiptService;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static ru.clevertec.checkrunner.util.TestConstants.PAGE;
+import static ru.clevertec.checkrunner.util.TestConstants.PAGE_SIZE;
 import static ru.clevertec.checkrunner.util.TestConstants.TEST_ID;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,6 +51,9 @@ class ReceiptControllerTest {
     @Mock
     private ReceiptFileService receiptFileService;
 
+    @Mock
+    private PaginationProperties paginationProperties;
+
     @InjectMocks
     private ReceiptController receiptController;
 
@@ -52,7 +62,7 @@ class ReceiptControllerTest {
 
     @BeforeEach
     void setUp() {
-        receiptController = new ReceiptController(receiptService, receiptFileService);
+        receiptController = new ReceiptController(receiptService, receiptFileService, paginationProperties);
     }
 
     @Test
@@ -69,7 +79,7 @@ class ReceiptControllerTest {
 
         assertAll(
                 () -> assertThat(receiptDtoResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED),
-                () -> assertThat(receiptDtoResponse.getBody()).isEqualTo(receiptDtoResp),
+                () -> assertThat(Objects.requireNonNull(receiptDtoResponse.getBody()).getData()).isEqualTo(receiptDtoResp),
                 () -> assertThat(receiptDtoRequestCaptor.getValue()).isEqualTo(receiptDtoReq)
         );
     }
@@ -79,17 +89,20 @@ class ReceiptControllerTest {
     void checkFindAllReceiptsShouldReturnReceiptDtoList() {
         ReceiptDtoResponse receiptDtoResp = ReceiptDtoResponseTestBuilder.aReceiptDtoResponse().build();
 
-        when(receiptService.getAllReceipts()).thenReturn(List.of(receiptDtoResp));
+        when(paginationProperties.getDefaultPageValue()).thenReturn(PAGE);
+        when(paginationProperties.getDefaultPageSize()).thenReturn(PAGE_SIZE);
+        when(receiptService.getAllReceipts(PAGE, PAGE_SIZE)).thenReturn(new PageImpl<>(List.of(receiptDtoResp)));
 
-        var receiptDtoListResponse = receiptController.findAllReceipts();
+        var receiptDtoListResponse = receiptController.findAllReceipts(PAGE, PAGE_SIZE);
+
+        verify(paginationProperties).getDefaultPageValue();
+        verify(paginationProperties).getDefaultPageSize();
+        verify(receiptService).getAllReceipts(anyInt(), anyInt());
 
         assertAll(
                 () -> assertThat(receiptDtoListResponse.getStatusCode()).isEqualTo(HttpStatus.OK),
-                () -> assertThat(receiptDtoListResponse.getBody().size()).isEqualTo(1),
-                () -> assertThat(receiptDtoListResponse.getBody().get(0)).isEqualTo(receiptDtoResp)
+                () -> assertThat(Objects.requireNonNull(receiptDtoListResponse.getBody()).getData().getContent().get(0)).isEqualTo(receiptDtoResp)
         );
-
-        verify(receiptService).getAllReceipts();
     }
 
     @Nested
@@ -106,12 +119,12 @@ class ReceiptControllerTest {
 
             var receiptDtoResponse = receiptController.findReceiptById(id);
 
+            verify(receiptService).getReceiptById(anyLong());
+
             assertAll(
                     () -> assertThat(receiptDtoResponse.getStatusCode()).isEqualTo(HttpStatus.OK),
-                    () -> assertThat(receiptDtoResponse.getBody()).isEqualTo(receiptDtoResp)
+                    () -> assertThat(Objects.requireNonNull(receiptDtoResponse.getBody()).getData()).isEqualTo(receiptDtoResp)
             );
-
-            verify(receiptService).getReceiptById(anyLong());
         }
 
         @Test
@@ -126,11 +139,11 @@ class ReceiptControllerTest {
     }
 
     @Nested
-    public class PutReceiptByIdTest {
-        @DisplayName("Put Receipt by ID")
+    public class UpdateReceiptByIdTest {
+        @DisplayName("Update Receipt by ID")
         @ParameterizedTest
         @ValueSource(longs = {1L, 2L, 3L})
-        void checkPutReceiptByIdShouldReturnReceiptDto(Long id) {
+        void checkUpdateReceiptByIdShouldReturnReceiptDto(Long id) {
             ReceiptDtoRequest receiptDtoReq = ReceiptDtoRequestTestBuilder.aReceiptDtoRequest().build();
             ReceiptDtoResponse receiptDtoResp = ReceiptDtoResponseTestBuilder.aReceiptDtoResponse()
                     .withId(TEST_ID)
@@ -138,27 +151,61 @@ class ReceiptControllerTest {
 
             when(receiptService.updateReceiptById(id, receiptDtoReq)).thenReturn(receiptDtoResp);
 
-            var receiptDtoResponse = receiptController.putReceiptById(id, receiptDtoReq);
+            var receiptDtoResponse = receiptController.updateReceiptById(id, receiptDtoReq);
 
             verify(receiptService).updateReceiptById(anyLong(), receiptDtoRequestCaptor.capture());
 
             assertAll(
                     () -> assertThat(receiptDtoResponse.getStatusCode()).isEqualTo(HttpStatus.OK),
-                    () -> assertThat(receiptDtoResponse.getBody()).isEqualTo(receiptDtoResp),
+                    () -> assertThat(Objects.requireNonNull(receiptDtoResponse.getBody()).getData()).isEqualTo(receiptDtoResp),
+                    () -> assertThat(receiptDtoRequestCaptor.getValue()).isEqualTo(receiptDtoReq)
+            );
+        }
+
+        @DisplayName("Partial Update Receipt by ID")
+        @ParameterizedTest
+        @ValueSource(longs = {1L, 2L, 3L})
+        void checkPartialUpdateReceiptByIdShouldReturnReceiptDto(Long id) {
+            ReceiptDtoRequest receiptDtoReq = ReceiptDtoRequestTestBuilder.aReceiptDtoRequest().build();
+            ReceiptDtoResponse receiptDtoResp = ReceiptDtoResponseTestBuilder.aReceiptDtoResponse()
+                    .withId(TEST_ID)
+                    .build();
+
+            when(receiptService.updateReceiptByIdPartially(id, receiptDtoReq)).thenReturn(receiptDtoResp);
+
+            var receiptDtoResponse = receiptController.updateReceiptByIdPartially(id, receiptDtoReq);
+
+            verify(receiptService).updateReceiptByIdPartially(anyLong(), receiptDtoRequestCaptor.capture());
+
+            assertAll(
+                    () -> assertThat(receiptDtoResponse.getStatusCode()).isEqualTo(HttpStatus.OK),
+                    () -> assertThat(Objects.requireNonNull(receiptDtoResponse.getBody()).getData()).isEqualTo(receiptDtoResp),
                     () -> assertThat(receiptDtoRequestCaptor.getValue()).isEqualTo(receiptDtoReq)
             );
         }
 
         @Test
-        @DisplayName("Put Receipt by ID; not found")
-        void checkPutReceiptByIdShouldThrowReceiptNotFoundException() {
+        @DisplayName("Update Receipt by ID; not found")
+        void checkUpdateReceiptByIdShouldThrowReceiptNotFoundException() {
             ReceiptDtoRequest receiptDtoReq = ReceiptDtoRequestTestBuilder.aReceiptDtoRequest().build();
 
-            doThrow(ReceiptNotFoundException.class).when(receiptService).updateReceiptById(anyLong(), any());
+            doThrow(ConversionException.class).when(receiptService).updateReceiptById(anyLong(), any());
 
-            assertThrows(ReceiptNotFoundException.class, () -> receiptController.putReceiptById(TEST_ID, receiptDtoReq));
+            assertThrows(ConversionException.class, () -> receiptController.updateReceiptById(TEST_ID, receiptDtoReq));
 
             verify(receiptService).updateReceiptById(anyLong(), any());
+        }
+
+        @Test
+        @DisplayName("Partial Update Receipt by ID; not found")
+        void checkPartialUpdateReceiptByIdShouldThrowReceiptNotFoundException() {
+            ReceiptDtoRequest receiptDtoReq = ReceiptDtoRequestTestBuilder.aReceiptDtoRequest().build();
+
+            doThrow(ReceiptNotFoundException.class).when(receiptService).updateReceiptByIdPartially(anyLong(), any());
+
+            assertThrows(ReceiptNotFoundException.class, () -> receiptController.updateReceiptByIdPartially(TEST_ID, receiptDtoReq));
+
+            verify(receiptService).updateReceiptByIdPartially(anyLong(), any());
         }
     }
 
@@ -172,9 +219,9 @@ class ReceiptControllerTest {
 
             var voidResponse = receiptController.deleteReceiptById(id);
 
-            assertThat(voidResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
-
             verify(receiptService).deleteReceiptById(anyLong());
+
+            assertThat(voidResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         }
 
         @Test

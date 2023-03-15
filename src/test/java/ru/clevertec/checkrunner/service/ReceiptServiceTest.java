@@ -11,15 +11,18 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import ru.clevertec.checkrunner.builder.receipt.ReceiptDtoRequestTestBuilder;
 import ru.clevertec.checkrunner.builder.receipt.ReceiptDtoResponseTestBuilder;
 import ru.clevertec.checkrunner.builder.receipt.ReceiptTestBuilder;
 import ru.clevertec.checkrunner.domain.Receipt;
 import ru.clevertec.checkrunner.dto.request.ReceiptDtoRequest;
 import ru.clevertec.checkrunner.dto.response.ReceiptDtoResponse;
+import ru.clevertec.checkrunner.exception.ConversionException;
 import ru.clevertec.checkrunner.exception.ReceiptNotFoundException;
-import ru.clevertec.checkrunner.mapper.ReceiptMapper;
-import ru.clevertec.checkrunner.mapper.list.ReceiptListMapper;
 import ru.clevertec.checkrunner.repository.DiscountCardRepository;
 import ru.clevertec.checkrunner.repository.ReceiptProductRepository;
 import ru.clevertec.checkrunner.repository.ReceiptRepository;
@@ -38,6 +41,8 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static ru.clevertec.checkrunner.util.TestConstants.PAGE;
+import static ru.clevertec.checkrunner.util.TestConstants.PAGE_SIZE;
 import static ru.clevertec.checkrunner.util.TestConstants.TEST_ID;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,13 +58,10 @@ class ReceiptServiceTest {
     private ReceiptProductRepository receiptProductRepository;
 
     @Mock
-    private ReceiptProductService receiptProductService;
+    private ReceiptUtil receiptUtil;
 
     @Mock
-    private ReceiptMapper receiptMapper;
-
-    @Mock
-    private ReceiptListMapper receiptListMapper;
+    private ConversionService conversionService;
 
     private ReceiptService receiptService;
 
@@ -69,8 +71,8 @@ class ReceiptServiceTest {
     @BeforeEach
     void setUp() {
         receiptService = new ReceiptServiceImpl(
-                receiptRepository, discountCardRepository, receiptProductRepository,
-                receiptProductService, receiptMapper, receiptListMapper
+                receiptRepository, discountCardRepository,
+                receiptProductRepository, receiptUtil, conversionService
         );
     }
 
@@ -81,35 +83,36 @@ class ReceiptServiceTest {
         ReceiptDtoRequest receiptDtoReq = ReceiptDtoRequestTestBuilder.aReceiptDtoRequest().build();
         ReceiptDtoResponse receiptDtoResp = ReceiptDtoResponseTestBuilder.aReceiptDtoResponse().build();
 
-        when(receiptRepository.save(any())).thenReturn(receipt);
-        when(receiptMapper.domainToDtoResponse(receipt)).thenReturn(receiptDtoResp);
+        when(conversionService.convert(receiptDtoReq, Receipt.class)).thenReturn(receipt);
+        when(conversionService.convert(receipt, ReceiptDtoResponse.class)).thenReturn(receiptDtoResp);
+        when(receiptRepository.save(receipt)).thenReturn(receipt);
 
         ReceiptDtoResponse receiptDtoResponse = receiptService.createReceipt(receiptDtoReq);
 
-        verify(receiptRepository, times(2)).save(any());
-        verify(receiptMapper).domainToDtoResponse(any());
+        verify(receiptRepository).save(receiptCaptor.capture());
+        verify(conversionService, times(2)).convert(any(), any());
 
-        assertThat(receiptDtoResponse).isEqualTo(receiptDtoResp);
+        assertAll(
+                () -> assertThat(receiptDtoResponse).isEqualTo(receiptDtoResp),
+                () -> assertThat(receiptCaptor.getValue()).isEqualTo(receipt)
+        );
     }
 
     @Test
     @DisplayName("Get all Receipts")
-    void checkGetAllReceiptsShouldReturnReceiptDtoList() {
+    void checkGetAllReceiptsShouldReturnReceiptDtoPage() {
         Receipt receipt = ReceiptTestBuilder.aReceipt().build();
         ReceiptDtoResponse receiptDtoResp = ReceiptDtoResponseTestBuilder.aReceiptDtoResponse().build();
 
-        when(receiptRepository.findAll()).thenReturn(List.of(receipt));
-        when(receiptListMapper.domainToDtoResponse(List.of(receipt))).thenReturn(List.of(receiptDtoResp));
+        when(receiptRepository.findAll(PageRequest.of(PAGE, PAGE_SIZE))).thenReturn(new PageImpl<>(List.of(receipt)));
+        when(conversionService.convert(receipt, ReceiptDtoResponse.class)).thenReturn(receiptDtoResp);
 
-        List<ReceiptDtoResponse> receiptDtoResponseList = receiptService.getAllReceipts();
+        Page<ReceiptDtoResponse> receiptDtoResponseList = receiptService.getAllReceipts(PAGE, PAGE_SIZE);
 
-        assertAll(
-                () -> assertThat(receiptDtoResponseList.size()).isEqualTo(1),
-                () -> assertThat(receiptDtoResponseList.get(0)).isEqualTo(receiptDtoResp)
-        );
+        verify(receiptRepository).findAll(PageRequest.of(PAGE, PAGE_SIZE));
+        verify(conversionService).convert(any(), any());
 
-        verify(receiptRepository).findAll();
-        verify(receiptListMapper).domainToDtoResponse(any());
+        assertThat(receiptDtoResponseList.getContent().get(0)).isEqualTo(receiptDtoResp);
     }
 
     @Nested
@@ -126,14 +129,14 @@ class ReceiptServiceTest {
                     .build();
 
             when(receiptRepository.findById(id)).thenReturn(Optional.of(receipt));
-            when(receiptMapper.domainToDtoResponse(receipt)).thenReturn(receiptDtoResp);
+            when(conversionService.convert(receipt, ReceiptDtoResponse.class)).thenReturn(receiptDtoResp);
 
             ReceiptDtoResponse receiptDtoResponse = receiptService.getReceiptById(id);
 
-            assertThat(receiptDtoResponse).isEqualTo(receiptDtoResp);
-
             verify(receiptRepository).findById(anyLong());
-            verify(receiptMapper).domainToDtoResponse(any());
+            verify(conversionService).convert(any(), any());
+
+            assertThat(receiptDtoResponse).isEqualTo(receiptDtoResp);
         }
 
         @Test
@@ -161,19 +164,54 @@ class ReceiptServiceTest {
                     .withId(id)
                     .build();
 
-            when(receiptRepository.findById(id)).thenReturn(Optional.of(receipt));
-            doNothing().when(receiptProductRepository).deleteAll(any());
-            doNothing().when(discountCardRepository).delete(any());
+            when(conversionService.convert(receiptDtoReq, Receipt.class)).thenReturn(receipt);
+            doNothing().when(receiptProductRepository).deleteAllByReceiptId(id);
             when(receiptRepository.save(receipt)).thenReturn(receipt);
-            when(receiptMapper.domainToDtoResponse(receipt)).thenReturn(receiptDtoResp);
+            when(conversionService.convert(receipt, ReceiptDtoResponse.class)).thenReturn(receiptDtoResp);
 
             ReceiptDtoResponse receiptDtoResponse = receiptService.updateReceiptById(id, receiptDtoReq);
 
-            verify(receiptRepository).findById(anyLong());
-            verify(receiptProductRepository).deleteAll(any());
-            verify(discountCardRepository).delete(any());
+            verify(conversionService, times(2)).convert(any(), any());
+            verify(receiptProductRepository).deleteAllByReceiptId(anyLong());
             verify(receiptRepository).save(receiptCaptor.capture());
-            verify(receiptMapper).domainToDtoResponse(any());
+
+            assertAll(
+                    () -> assertThat(receiptDtoResponse).isEqualTo(receiptDtoResp),
+                    () -> assertThat(receiptCaptor.getValue()).isEqualTo(receipt)
+            );
+        }
+
+        @DisplayName("Partial Update Receipt by ID")
+        @ParameterizedTest
+        @ValueSource(longs = {1L, 2L, 3L})
+        void checkPartialUpdateReceiptByIdShouldReturnReceiptDto(Long id) {
+            Receipt receipt = ReceiptTestBuilder.aReceipt()
+                    .withId(id)
+                    .build();
+            ReceiptDtoRequest receiptDtoReq = ReceiptDtoRequestTestBuilder.aReceiptDtoRequest().build();
+            ReceiptDtoResponse receiptDtoResp = ReceiptDtoResponseTestBuilder.aReceiptDtoResponse()
+                    .withId(id)
+                    .build();
+
+            when(receiptRepository.findById(id)).thenReturn(Optional.of(receipt));
+            doNothing().when(receiptProductRepository).deleteAllByReceiptId(id);
+            doNothing().when(discountCardRepository).delete(any());
+            doNothing().when(receiptUtil).addProductsToReceipt(any(), any());
+            doNothing().when(receiptUtil).addPromDiscountToReceipt(any());
+            doNothing().when(receiptUtil).addDiscountCardToReceipt(any(), any());
+            when(receiptRepository.save(receipt)).thenReturn(receipt);
+            when(conversionService.convert(receipt, ReceiptDtoResponse.class)).thenReturn(receiptDtoResp);
+
+            ReceiptDtoResponse receiptDtoResponse = receiptService.updateReceiptByIdPartially(id, receiptDtoReq);
+
+            verify(receiptRepository).findById(anyLong());
+            verify(receiptProductRepository).deleteAllByReceiptId(anyLong());
+            verify(discountCardRepository).delete(any());
+            verify(receiptUtil).addProductsToReceipt(any(), any());
+            verify(receiptUtil).addPromDiscountToReceipt(any());
+            verify(receiptUtil).addDiscountCardToReceipt(any(), any());
+            verify(receiptRepository).save(receiptCaptor.capture());
+            verify(conversionService).convert(any(), any());
 
             assertAll(
                     () -> assertThat(receiptDtoResponse).isEqualTo(receiptDtoResp),
@@ -186,9 +224,21 @@ class ReceiptServiceTest {
         void checkUpdateReceiptByIdShouldThrowReceiptNotFoundException() {
             ReceiptDtoRequest receiptDtoReq = ReceiptDtoRequestTestBuilder.aReceiptDtoRequest().build();
 
-            doThrow(ReceiptNotFoundException.class).when(receiptRepository).findById(anyLong());
+            doThrow(ConversionException.class).when(conversionService).convert(receiptDtoReq, Receipt.class);
 
-            assertThrows(ReceiptNotFoundException.class, () -> receiptService.updateReceiptById(TEST_ID, receiptDtoReq));
+            assertThrows(ConversionException.class, () -> receiptService.updateReceiptById(TEST_ID, receiptDtoReq));
+
+            verify(conversionService).convert(any(), any());
+        }
+
+        @Test
+        @DisplayName("Partial Update Receipt by ID; not found")
+        void checkPartialUpdateReceiptByIdShouldThrowReceiptNotFoundException() {
+            ReceiptDtoRequest receiptDtoReq = ReceiptDtoRequestTestBuilder.aReceiptDtoRequest().build();
+
+            doThrow(ReceiptNotFoundException.class).when(receiptRepository).findById(TEST_ID);
+
+            assertThrows(ReceiptNotFoundException.class, () -> receiptService.updateReceiptByIdPartially(TEST_ID, receiptDtoReq));
 
             verify(receiptRepository).findById(anyLong());
         }
