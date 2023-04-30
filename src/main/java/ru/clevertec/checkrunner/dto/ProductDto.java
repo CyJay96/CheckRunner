@@ -39,6 +39,6 @@ public class ProductDto implements Serializable {
     @JsonProperty(value = "price")
     private BigDecimal price;
 
-    @JsonProperty(value = "is_promotional")
+    @JsonProperty(value = "isPromotional")
     private boolean isPromotional;
 }

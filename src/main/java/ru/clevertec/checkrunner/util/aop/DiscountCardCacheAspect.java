@@ -20,8 +20,8 @@ public class DiscountCardCacheAspect {
     private final Cache<Long, DiscountCard> cache;
 
     public DiscountCardCacheAspect(
-            @Value("${cache.algorithm}") String cacheType,
-            @Value("${cache.capacity}") int cacheCapacity
+            @Value("${app.cache.algorithm}") String cacheType,
+            @Value("${app.cache.capacity}") int cacheCapacity
     ) {
         Factory<Long, DiscountCard> factory = new CacheFactory<>();
         cache = factory.getCache(cacheType, cacheCapacity);
@@ -39,11 +39,10 @@ public class DiscountCardCacheAspect {
         Long id = (Long) joinPoint.getArgs()[0];
         if (cache.containsKey(id)) {
             return Optional.of(cache.get(id));
-        } else {
-            Optional<DiscountCard> discountCardOptional = (Optional<DiscountCard>) joinPoint.proceed();
-            discountCardOptional.ifPresent(discountCard -> cache.put(discountCard.getId(), discountCard));
-            return discountCardOptional;
         }
+        Optional<DiscountCard> discountCardOptional = (Optional<DiscountCard>) joinPoint.proceed();
+        discountCardOptional.ifPresent(discountCard -> cache.put(discountCard.getId(), discountCard));
+        return discountCardOptional;
     }
 
     @Around("execution(* ru.clevertec.checkrunner.repository.DiscountCardRepository.deleteById(..))")

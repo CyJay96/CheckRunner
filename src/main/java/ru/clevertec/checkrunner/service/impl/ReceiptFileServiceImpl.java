@@ -46,11 +46,11 @@ public class ReceiptFileServiceImpl implements ReceiptFileService {
             writer.write("TIME: " + timeFormatter.format(receipt.getCreationDate()) + "\n\n");
 
             writer.write("QTY DESCRIPTION PRICE TOTAL" + "\n");
-            receipt.getReceiptProductDtos().forEach(receiptProductDto -> {
+            receipt.getReceiptProducts().forEach(receiptProductDto -> {
                 try {
                     writer.write(receiptProductDto.getQuantity() + " " +
-                            "\"" + receiptProductDto.getProductDto().getDescription() + "\" " +
-                            receiptProductDto.getProductDto().getPrice() + " " +
+                            "\"" + receiptProductDto.getProduct().getDescription() + "\" " +
+                            receiptProductDto.getProduct().getPrice() + " " +
                             receiptProductDto.getTotal() + "\n");
                 } catch (IOException e) {
                     throw new RuntimeException(e);

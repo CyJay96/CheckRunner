@@ -1,19 +1,20 @@
 package ru.clevertec.checkrunner.service;
 
+import org.springframework.data.domain.Page;
 import ru.clevertec.checkrunner.dto.request.ReceiptDtoRequest;
 import ru.clevertec.checkrunner.dto.response.ReceiptDtoResponse;
-
-import java.util.List;
 
 public interface ReceiptService {
 
     ReceiptDtoResponse createReceipt(ReceiptDtoRequest receiptDtoRequest);
 
-    List<ReceiptDtoResponse> getAllReceipts();
+    Page<ReceiptDtoResponse> getAllReceipts(Integer page, Integer pageSize);
 
     ReceiptDtoResponse getReceiptById(Long id);
 
     ReceiptDtoResponse updateReceiptById(Long id, ReceiptDtoRequest receiptDtoRequest);
+
+    ReceiptDtoResponse updateReceiptByIdPartially(Long id, ReceiptDtoRequest receiptDtoRequest);
 
     void deleteReceiptById(Long id);
 }

@@ -1,17 +1,17 @@
-package ru.clevertec.checkrunner.util.cache.impl;
+package ru.clevertec.checkrunner.util.cache;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import ru.clevertec.checkrunner.util.cache.Cache;
+import ru.clevertec.checkrunner.util.cache.impl.LfuCache;
 
 import java.util.Collection;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-class LruCacheTest {
+class LfuCacheTest {
 
     private Cache<String, Integer> cache;
 
@@ -21,19 +21,38 @@ class LruCacheTest {
         cache = new LfuCache<>(capacity);
     }
 
-    @Test
-    @DisplayName("Put to the cache")
-    void checkPutShouldPutValueToCache() {
-        cache.put("one", 1);
-        cache.put("two", 2);
-        cache.put("three", 2);
+    @Nested
+    class CachePut {
+        @Test
+        @DisplayName("Put to the cache case 1")
+        void checkPutShouldPutValueToCache() {
+            cache.put("one", 1);
+            cache.put("two", 2);
+            cache.put("three", 2);
 
-        assertAll(
-                () -> assertThat(cache.size()).isEqualTo(2),
-                () -> assertThat(cache.containsKey("one")).isFalse(),
-                () -> assertThat(cache.containsKey("two")).isTrue(),
-                () -> assertThat(cache.containsKey("three")).isTrue()
-        );
+            assertAll(
+                    () -> assertThat(cache.size()).isEqualTo(2),
+                    () -> assertThat(cache.containsKey("one")).isFalse(),
+                    () -> assertThat(cache.containsKey("two")).isTrue(),
+                    () -> assertThat(cache.containsKey("three")).isTrue()
+            );
+        }
+
+        @Test
+        @DisplayName("Put to the cache case 2")
+        void checkPutShouldPutValueToCacheConsiderFrequency() {
+            cache.put("one", 1);
+            cache.get("one");
+            cache.put("two", 2);
+            cache.put("three", 2);
+
+            assertAll(
+                    () -> assertThat(cache.size()).isEqualTo(2),
+                    () -> assertThat(cache.containsKey("one")).isTrue(),
+                    () -> assertThat(cache.containsKey("two")).isFalse(),
+                    () -> assertThat(cache.containsKey("three")).isTrue()
+            );
+        }
     }
 
     @Test

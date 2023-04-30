@@ -25,12 +25,12 @@ public class ReceiptProductDto implements Serializable {
     @JsonProperty(value = "quantity")
     private Long quantity;
 
-    @JsonProperty(value = "product_dto")
-    private ProductDto productDto;
+    @JsonProperty(value = "product")
+    private ProductDto product;
 
     @JsonProperty(value = "total")
     private BigDecimal total;
 
-    @JsonProperty(value = "receipt_id")
+    @JsonProperty(value = "receiptId")
     private Long receiptId;
 }

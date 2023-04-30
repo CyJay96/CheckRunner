@@ -19,8 +19,8 @@ public class ReceiptCacheAspect {
     private final Cache<Long, Receipt> cache;
 
     public ReceiptCacheAspect(
-            @Value("${cache.algorithm}") String cacheType,
-            @Value("${cache.capacity}") int cacheCapacity
+            @Value("${app.cache.algorithm}") String cacheType,
+            @Value("${app.cache.capacity}") int cacheCapacity
     ) {
         Factory<Long, Receipt> factory = new CacheFactory<>();
         cache = factory.getCache(cacheType, cacheCapacity);
@@ -38,11 +38,10 @@ public class ReceiptCacheAspect {
         Long id = (Long) joinPoint.getArgs()[0];
         if (cache.containsKey(id)) {
             return Optional.of(cache.get(id));
-        } else {
-            Optional<Receipt> receiptOptional = (Optional<Receipt>) joinPoint.proceed();
-            receiptOptional.ifPresent(receipt -> cache.put(receipt.getId(), receipt));
-            return receiptOptional;
         }
+        Optional<Receipt> receiptOptional = (Optional<Receipt>) joinPoint.proceed();
+        receiptOptional.ifPresent(receipt -> cache.put(receipt.getId(), receipt));
+        return receiptOptional;
     }
 
     @Around("execution(* ru.clevertec.checkrunner.repository.ReceiptRepository.deleteById(..))")

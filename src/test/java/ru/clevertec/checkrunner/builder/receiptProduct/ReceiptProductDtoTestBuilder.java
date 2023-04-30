@@ -23,7 +23,7 @@ public class ReceiptProductDtoTestBuilder implements TestBuilder<ReceiptProductD
 
     private Long quantity = TEST_NUMBER;
 
-    private ProductDto productDto = ProductDtoTestBuilder.aProductDto().build();
+    private ProductDto product = ProductDtoTestBuilder.aProductDto().build();
 
     private BigDecimal total = TEST_BIG_DECIMAL;
 
@@ -34,7 +34,7 @@ public class ReceiptProductDtoTestBuilder implements TestBuilder<ReceiptProductD
         final ReceiptProductDto receiptProductDto = new ReceiptProductDto();
         receiptProductDto.setId(id);
         receiptProductDto.setQuantity(quantity);
-        receiptProductDto.setProductDto(productDto);
+        receiptProductDto.setProduct(product);
         receiptProductDto.setTotal(total);
         receiptProductDto.setReceiptId(receiptId);
         return receiptProductDto;

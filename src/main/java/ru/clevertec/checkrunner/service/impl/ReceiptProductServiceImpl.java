@@ -7,7 +7,6 @@ import ru.clevertec.checkrunner.domain.Receipt;
 import ru.clevertec.checkrunner.domain.ReceiptProduct;
 import ru.clevertec.checkrunner.exception.ProductNotFoundException;
 import ru.clevertec.checkrunner.repository.ProductRepository;
-import ru.clevertec.checkrunner.repository.ReceiptProductRepository;
 import ru.clevertec.checkrunner.service.ReceiptProductService;
 
 import java.math.BigDecimal;
@@ -16,7 +15,6 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class ReceiptProductServiceImpl implements ReceiptProductService {
 
-    private final ReceiptProductRepository receiptProductRepository;
     private final ProductRepository productRepository;
 
     @Override
@@ -24,13 +22,11 @@ public class ReceiptProductServiceImpl implements ReceiptProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        ReceiptProduct receiptProduct = ReceiptProduct.builder()
+        return ReceiptProduct.builder()
                 .quantity(productQuantity)
                 .product(product)
                 .total(product.getPrice().multiply(BigDecimal.valueOf(productQuantity)))
                 .receipt(receipt)
                 .build();
-
-        return receiptProductRepository.save(receiptProduct);
     }
 }
